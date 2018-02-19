@@ -11,6 +11,16 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::view('/', 'welcome');
+
+Route::prefix('user')->group(function () {
+    // registering page
+    Route::view('/register', 'register');
+    // registering page
+    Route::view('/login', 'login');
+
+    // register action
+    Route::post('/register', 'UserController@registerUser');
+    // login action
+    Route::post('/login', 'UserController@loginUser');
 });
