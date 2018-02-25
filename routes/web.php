@@ -11,16 +11,44 @@
 |
 */
 
-Route::view('/', 'welcome');
-
-Route::prefix('user')->group(function () {
-    // registering page
-    Route::view('/register', 'register');
-    // registering page
-    Route::view('/login', 'login');
-
-    // register action
-    Route::post('/register', 'UserController@registerUser');
-    // login action
-    Route::post('/login', 'UserController@loginUser');
-});
+Route::view('/', 'welcome', [
+    'route' => 0,
+    'css_files' => ['welcome'],
+    'campaigns' => [
+        (object) ['title'=>'Titolo', 'description'=>'descrizione']
+    ]
+]);
+Route::view('/explore', 'explore', [
+    'route' => 1,
+    'css_files' => ['explore'],
+    'campaigns' => [
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione'],
+        (object) ['title'=>'Titolo', 'description'=>'descrizione']
+    ]
+]);
+Route::view('/sign', 'sign', [
+    'route' => 3,
+    'css_files' => ['sign']
+]);
