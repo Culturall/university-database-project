@@ -11,6 +11,11 @@ class WorkerSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Worker::class, 50)->create();
+        factory(App\Worker::class, 50)->create()->each(function ($w) {
+            $skills = App\Skill::inRandomOrder()->limit(rand(0,3))->get();
+            foreach ($skills as $key => $skill) {
+                $w->skills()->attach($skill->name, ['value' => 2.5]);
+            }
+        });
     }
 }

@@ -31,11 +31,9 @@ class Task extends Model
     }
 }
 
-class TaskOption extends Model 
+class TaskOption extends Model
 {
-    protected $table = 'task';
-    protected $primaryKey = ['name','task'];
-    public $incrementing = 'false';
+    protected $table = 'task_option';
     public $timestamps = false;
 
     protected $fillable = [
@@ -50,6 +48,6 @@ class TaskOption extends Model
 
     public function selected()
     {
-        return $this->belongsToMany('App\Worker', 'selected', 'worker', 'option_task,option_name');
+        return $this->belongsToMany('App\Worker', 'selected', 'worker');
     }
 }

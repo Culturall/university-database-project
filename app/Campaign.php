@@ -21,8 +21,18 @@ class Campaign extends Model
         'creator'
     ];
 
+    public function createdBy()
+    {
+        return $this->belongsTo('App\Worker', 'creator');
+    }
+
     public function joiners()
     {
         return $this->belongsToMany('App\Worker', 'joined', 'campaign', 'worker');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany('App\Task', 'campaign');
     }
 }

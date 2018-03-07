@@ -23,6 +23,10 @@ class Worker extends Model
         return $this->belongsToMany('App\Skill', 'has', 'worker', 'skill')->withPivot('value');
     }
 
+    public function campaigns() {
+        return $this->hasMany('App\Campaign', 'creator');
+    }
+
     public function joined()
     {
         return $this->belongsToMany('App\Campaign', 'joined', 'worker', 'campaign');

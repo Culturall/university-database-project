@@ -14,10 +14,11 @@ class CreateTaskOptionTable extends Migration
     public function up()
     {
         Schema::create('task_option', function (Blueprint $table) {
+            $table->increments('id');
             $table->string('name', 100);
             $table->unsignedInteger('task');
 
-            $table->primary(['name', 'task']);
+            $table->unique(['name', 'task']);
             $table->foreign('task')->references('id')->on('task')->onUpdate('cascade')->onDelete('cascade');
         });
     }
