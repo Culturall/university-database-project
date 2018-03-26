@@ -11,6 +11,11 @@ class CampaignSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Campaign::class, 10)->create();
+        factory(App\Campaign::class, 10)->create()->each(function ($c) {
+            $workers = App\Worker::inRandomOrder()->limit(rand(0,4))->get();
+            foreach ($workers as $key => $worker) {
+                $c->joiners()->attach($worker->id);
+            }
+        });
     }
 }

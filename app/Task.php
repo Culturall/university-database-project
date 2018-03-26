@@ -48,6 +48,6 @@ class TaskOption extends Model
 
     public function selected()
     {
-        return $this->belongsToMany('App\Worker', 'selected', 'worker');
+        return $this->belongsToMany('App\Worker', 'selected', 'task_option', 'worker');
     }
 }

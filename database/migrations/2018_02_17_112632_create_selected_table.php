@@ -15,12 +15,11 @@ class CreateSelectedTable extends Migration
     {
         Schema::create('selected', function (Blueprint $table) {
             $table->unsignedInteger('worker');
-            $table->unsignedInteger('option_task');
-            $table->string('option_name', 100)->nullable(false);
+            $table->unsignedInteger('task_option');
 
-            $table->primary(['worker', 'option_task']);
-            $table->foreign('worker')->references('id')->on('task')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign(['option_task', 'option_name'])->references(['task', 'name'])->on('task_option')->onUpdate('cascade')->onDelete('cascade');
+            $table->primary(['worker', 'task_option']);
+            $table->foreign('worker')->references('id')->on('worker')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('task_option')->references('id')->on('task_option')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
