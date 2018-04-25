@@ -18,13 +18,13 @@ class CreateWorkerTable extends Migration
         Schema::create('worker', function (Blueprint $table) {
             $table->increments('id');
             $table->char('password', 255)->nullable(false);
-            $table->string('name', 100)->nullable(false);
-            $table->string('surname', 100)->nullable(false);
+            $table->string('name', 255)->nullable(false);
+            $table->string('surname', 255)->nullable(false);
             $table->date('birthdate')->nullable(false);
-            $table->string('email', 200)->nullable(false);
+            $table->string('email', 255)->nullable(false);
             $table->boolean('requester')->nullable(false)->default(false);
 
-            $table->char('remember_token', 100)->nullable(true);
+            $table->rememberToken();
 
             $table->unique('email');
         });

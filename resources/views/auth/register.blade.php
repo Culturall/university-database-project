@@ -10,6 +10,7 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
+                        @method('POST')
 
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
@@ -20,6 +21,39 @@
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback">
                                         <strong>{{ $errors->first('name') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="surname" class="col-md-4 col-form-label text-md-right">Surname</label>
+
+                            <div class="col-md-6">
+                                <input id="surname" type="text" class="form-control{{ $errors->has('surname') ? ' is-invalid' : '' }}" name="surname" value="{{ old('surname') }}" required autofocus>
+
+                                @if ($errors->has('surname'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('surname') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="birthdate" class="col-md-4 col-form-label text-md-right">Birthdate</label>
+
+                            <div class="col-md-6">
+                                <div class="input-group date" data-provide="datepicker">
+                                    <input type="text" class="form-control" name="birthdate">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                </div>
+
+                                @if ($errors->has('birthdate'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('birthdate') }}</strong>
                                     </span>
                                 @endif
                             </div>
@@ -58,6 +92,31 @@
 
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="skills" class="col-md-4 col-form-label text-md-right">Skills</label>
+                            <div class="col-md-6">
+                                <select class="form-control form-control-sm mb-3" id="skill-1" name="skill-1">
+                                    <option selected value="">-</option>
+                                    @foreach ($skills as $skill)
+                                        <option value="{{$skill->name}}">{{$skill->name}}</option>
+                                    @endforeach
+                                </select>
+                                <select class="form-control form-control-sm mb-3" id="skill-2" name="skill-2">
+                                    <option selected value="">-</option>
+                                    @foreach ($skills as $skill)
+                                        <option value="{{$skill->name}}">{{$skill->name}}</option>
+                                    @endforeach
+                                </select>
+                                <select class="form-control form-control-sm mb-3" id="skill-3" name="skill-3">
+                                    <option selected value="">-</option>
+                                    @foreach ($skills as $skill)
+                                        <option value="{{$skill->name}}">{{$skill->name}}</option>
+                                    @endforeach
+                                </select>
+                                <small id="skillsHelp" class="form-text text-muted">You can choose up to 3 skills to start working<br>They'll have 2.5 points initial value</small>
                             </div>
                         </div>
 

@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://dev.db-project.local'),
+    'url' => env('APP_URL', 'http://db-project.local'),
 
     /*
     |--------------------------------------------------------------------------

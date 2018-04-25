@@ -11,7 +11,7 @@
     </li>
     @auth
       <li class="nav-item <?=$route == 2 ? 'active':''?>">
-        <a class="nav-link" href="#">Profile</a>
+        <a class="nav-link" href="{{ url('/') }}/profile/{{Auth::user()->id}}">Profile</a>
       </li>
     @endauth
   </ul>

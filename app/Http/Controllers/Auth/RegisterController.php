@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Worker;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -49,7 +49,8 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:worker',
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
@@ -58,14 +59,30 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return \App\Worker
      */
     protected function create(array $data)
     {
-        return User::create([
+        $worker = Worker::create([
             'name' => $data['name'],
+            'surname' => $data['surname'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'birthdate' => $data['birthdate'],
         ]);
+        $worker->skills()->attach($data['skill-1'], ['value' => 2.5]);
+        $worker->skills()->attach($data['skill-2'], ['value' => 2.5]);
+        $worker->skills()->attach($data['skill-3'], ['value' => 2.5]);
+        return $worker;
+    }
+
+    public function showRegistrationForm()
+    {
+        $skills = \App\Skill::all();
+        $data = [
+            'skills' => $skills
+        ];
+
+        return view('auth.register')->with($data);
     }
 }

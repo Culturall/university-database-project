@@ -6,7 +6,8 @@ $factory->define(App\Worker::class, function (Faker $faker) {
     return [
         'name' => $faker->firstName,
         'surname' => $faker->lastName,
-        'password' => $faker->md5,
+        // 'password' => $faker->md5,
+        'password' => bcrypt('password'),
         'birthdate' => $faker->date,
         'email' => $faker->unique()->email,
         'requester' => $faker->boolean
