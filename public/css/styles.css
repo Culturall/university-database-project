@@ -1,3 +1,27 @@
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 98px;
+}
+
+.col-centered {
+  margin: auto;
+  float: none;
+}
+
+.container {
+  margin-top: 50px;
+}
+
+.card-text {
+  max-height: 240px;
+  overflow: hidden;
+}
+
 div.campaigns {
   margin-top: 48px;
 }
@@ -8,5 +32,27 @@ div.campaigns div.card-container {
 
 div.btn-group {
   margin-top: 24px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 50px;
+  padding: 0 24px;
+}
+
+.footer p {
+  line-height: 50px;
+}
+
+.footer p:first-of-type {
+  float: left;
+}
+
+.footer p:last-of-type {
+  float: right;
 }
 
