@@ -12,7 +12,8 @@
             @endif
             @auth
                 @if ($worker->id == Auth::user()->id)
-                    <form  method="POST" action="{{ url('/') }}/profile/edit" class="mb-4">
+                    <button type="button" class="badge btn btn-default float-right profile-edit-show mb-4" style="font-size: initial;">Edit your profile</button>
+                    <form id="profile-edit-form" method="POST" action="{{ url('/') }}/profile/edit" class="mb-4" style="display: none;">
                         @csrf
                         @method('POST')
 
@@ -53,40 +54,10 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="skills" class="col-md-3 col-form-label text-md-right">Skills</label>
-                            <div class="col-md-9">
-                                @php
-                                    $worker_skills_names = [];
-
-                                    foreach($worker->skills as $skill) {
-                                        array_push($worker_skills_names, $skill->name);
-                                    }
-                                @endphp
-                                <select class="form-control form-control-sm mb-3" id="skill-1" name="skill-1">
-                                    <option selected value="">-</option>
-                                    @foreach ($skills as $skill)
-                                        <option value="{{$skill->name}}" {{(count($worker_skills_names>=1) && $worker_skills_names[0] == $skill->name) ? 'selected' : ''}}>{{$skill->name}}</option>
-                                    @endforeach
-                                </select>
-                                <select class="form-control form-control-sm mb-3" id="skill-2" name="skill-2">
-                                    <option selected value="">-</option>
-                                    @foreach ($skills as $skill)
-                                        <option value="{{$skill->name}}" {{(count($worker_skills_names>=2) && $worker_skills_names[1] == $skill->name) ? 'selected' : ''}}>{{$skill->name}}</option>
-                                    @endforeach
-                                </select>
-                                <select class="form-control form-control-sm mb-3" id="skill-3" name="skill-3">
-                                    <option selected value="">-</option>
-                                    @foreach ($skills as $skill)
-                                        <option value="{{$skill->name}}" {{(count($worker_skills_names>=3) && $worker_skills_names[2] == $skill->name) ? 'selected' : ''}}>{{$skill->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="form-group row mb-4">
                             <div class="col-lg-12">
-                                <button type="submit" class="badge btn btn-secondary float-right" style="font-size: initial;">Edit</button>
+                                <button type="submit" class="badge btn btn-primary float-right" style="font-size: initial;">Edit</button>
+                                <button type="button" class="badge btn btn-default float-right mr-2 cancel" style="font-size: initial;">Cancel</button>
                             </div>
                         </div>
                     </form>

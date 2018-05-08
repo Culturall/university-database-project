@@ -8,7 +8,9 @@
 
     <div class="btn-group btn-group-lg" role="group" aria-label="...">
         <button type="button" class="btn btn-primary">Get a task</button>
-        <button type="button" class="btn btn-primary">Create a campaign</button>
+        @auth
+            <button type="button" class="btn btn-primary">Create a campaign</button>
+        @endauth
     </div>
 
     @isset($campaigns)

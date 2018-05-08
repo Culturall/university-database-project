@@ -19,9 +19,21 @@
         </div>
     </div>
 
-    <div class="btn-group btn-group-lg" role="group" aria-label="...">
-        <button type="button" class="btn btn-primary">Join</button>
-    </div>
+    @auth 
+        @if (count($campaign->joiners()->find(Auth::user()->id)))
+            <div class="btn-group btn-group-lg" role="group" aria-label="...">
+                <form  method="POST" action="{{ route('join') }}">
+                    @csrf
+                    @method('POST')
+                    <input type="hidden" name="worker_id" value="{{ Auth::user()->id }}">
+                    <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
+                    <button type="submit" class="btn btn-primary">Join</button>
+                </form>
+            </div>
+        @else
+            lOL
+        @endif
+    @endauth
 
     @isset($campaign)
         <div class="row campaigns">

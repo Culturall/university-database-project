@@ -14,42 +14,54 @@ use Illuminate\Http\Request;
 
 Route::view('/', 'welcome', [
     'route' => 0,
-    'css_files' => ['welcome'],
     'campaigns' => App\Campaign::limit(8)->get(),
 ]);
+
+// EXPLORE ----------------------------------------------------------------------------------------------
 Route::view('/explore', 'explore', [
     'route' => 1,
-    'css_files' => ['explore'],
     'campaigns' => App\Campaign::get(),
 ]);
 Route::get('/explore/{campaign}', function (App\Campaign $campaign) {
     return view('campaign', [
         'route' => 1,
-        'css_files' => ['welcome'],
         'campaign' => $campaign,
     ]);
-});
+})->name('campaign');
+
+// PROFILE ----------------------------------------------------------------------------------------------
 Route::get('/profile/{worker}', function (App\Worker $worker) {
     $skills = false;
     if (Auth::user() && $worker && $worker->id == Auth::user()->id) $skills = \App\Skill::all();
     return view('profile', [
         'route' => 2,
-        'css_files' => ['welcome'],
         'worker' => $worker,
         'skills' => $skills
     ]);
 })->name('profile');
 Route::post('/profile/edit', function (Request $request) {
     $worker_id = $request->input("worker_id");
-    \App\Worker::find(54)->update(["name" => "PAOLOOO"]);
+    $updateValues = $request->only([
+        'name',
+        'surname',
+        'birthdate'
+    ]);
+    \App\Worker::find($worker_id)->update($updateValues);
     return redirect()->route('profile', ['worker' => $worker_id]);
 });
-
 Route::view('/profile', 'profile', [
     'route' => 2
 ]);
 
-// Auth::routes();
+// CAMPAIGNS ----------------------------------------------------------------------------------------------
+Route::post('join', function (Request $request) {
+    $worker_id = $request->input("worker_id");
+    $campaign_id = $request->input("campaign_id");
+    \App\Worker::find($worker_id)->joined()->attach($campaign_id);
+    return redirect()->route('campaign', ['campaign' => $campaign_id]);
+})->name('join');
+
+// Auth::routes() -----------------------------------------------------------------------------------------
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');

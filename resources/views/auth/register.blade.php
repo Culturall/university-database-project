@@ -116,7 +116,7 @@
                                         <option value="{{$skill->name}}">{{$skill->name}}</option>
                                     @endforeach
                                 </select>
-                                <small id="skillsHelp" class="form-text text-muted">You can choose up to 3 skills to start working<br>They'll have 2.5 points initial value</small>
+                                <small id="skillsHelp" class="form-text text-muted">You can choose up to 3 skills to start working. Pay attention, you can't change them later!<br>They'll have 2.5 points initial value</small>
                             </div>
                         </div>
 
