@@ -48,7 +48,7 @@ Route::post('/profile/edit', function (Request $request) {
     $updateValues = $request->only([
         'name',
         'surname',
-        'birthdate',
+        'birthdate'
     ]);
     \App\Worker::find($worker_id)->update($updateValues);
     return redirect()->route('profile', ['worker' => $worker_id]);
@@ -79,9 +79,5 @@ Route::post('campaign/create', function (Request $request) {
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-
-Route::get('/home', 'HomeController@index')->name('home');
-
-Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
