@@ -17,7 +17,7 @@ class CreateWorkerTable extends Migration
         
         Schema::create('worker', function (Blueprint $table) {
             $table->increments('id');
-            $table->char('password', 255)->nullable(false);
+            $table->string('password', 255)->nullable(false);
             $table->string('name', 255)->nullable(false);
             $table->string('surname', 255)->nullable(false);
             $table->date('birthdate')->nullable(false);

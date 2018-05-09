@@ -7,9 +7,22 @@
     <h1 class="display-4 text-muted">A <i>work for tasks</i> place</h5>
 
     <div class="btn-group btn-group-lg" role="group" aria-label="...">
-        <button type="button" class="btn btn-primary">Get a task</button>
+       
         @auth
-            <button type="button" class="btn btn-primary">Create a campaign</button>
+            <form id="get-task-form" method="POST" action="{{ route('join') }}">
+                @csrf
+                @method('POST')
+
+                <input type="hidden" name="worker_id" value="{{Auth::user()->id}}">
+
+                @if (!Auth::user()->requester)
+                    <button class="btn btn-primary action" type="submit">Get a task</button>
+                @else
+                    <a class="btn btn-primary action" href="
+                        {{ route('campaign.create') }}
+                    ">Create a campaign</a>
+                @endif
+            </form>
         @endauth
     </div>
 

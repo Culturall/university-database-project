@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Worker;
 use App\Http\Controllers\Controller;
+use App\Worker;
+use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -19,7 +19,7 @@ class RegisterController extends Controller
     | validation and creation. By default this controller uses a trait to
     | provide this functionality without requiring any additional code.
     |
-    */
+     */
 
     use RegistersUsers;
 
@@ -68,12 +68,15 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'surname' => $data['surname'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' => Hash::make($data['password']),
             'birthdate' => $data['birthdate'],
         ]);
-        $worker->skills()->attach($data['skill-1'], ['value' => 2.5]);
-        $worker->skills()->attach($data['skill-2'], ['value' => 2.5]);
-        $worker->skills()->attach($data['skill-3'], ['value' => 2.5]);
+        if (isset($data['skills']) && count($data['skills'])) {
+            foreach ($data['skills'] as $skill) {
+                if ($skill)
+                    $worker->skills()->attach($skill, ['value' => 2.5]);
+            }
+        }
         return $worker;
     }
 
@@ -81,7 +84,7 @@ class RegisterController extends Controller
     {
         $skills = \App\Skill::all();
         $data = [
-            'skills' => $skills
+            'skills' => $skills,
         ];
 
         return view('auth.register')->with($data);

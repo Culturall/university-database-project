@@ -49,8 +49,13 @@ div.btn-group {
         &:first-of-type {
             float: left;
         }
+
         &:last-of-type {
             float: right;
         }
     }
+}
+
+a.action, a.action:visited, a.action:hover, a.action:active {
+    color: white !important;
 }

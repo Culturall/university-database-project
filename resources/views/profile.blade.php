@@ -39,7 +39,7 @@
                             <label for="birthdate" class="col-md-3 col-form-label text-md-right">Birthdate</label>
 
                             <div class="col-md-9">
-                                <div class="input-group date" data-provide="datepicker">
+                                <div class="input-group date" data-provide="datepicker" data-date-format="yyyy/mm/dd">
                                     <input type="text" class="form-control" name="birthdate" value="{{$worker->birthdate}}">
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
@@ -100,14 +100,17 @@
 
     <div class="row campaigns">
         @forelse ($worker->joined as $campaign)
-            <div class="card-container col-sm-6 col-lg-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $campaign->title }}</h5>
-                        <p class="card-text">{{ $campaign->description }}</p>
+            @foreach ($campaign->tasks as $task)
+                <div class="card-container col-sm-6 col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $task->title }}</h5>
+                            <p class="small">{{ $campaign->title }}</p>
+                            <p class="card-text">{{ $task->description }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
         @empty
             <div class="col-centered">
                 <p class="text-muted">Nothing<p>

@@ -20,10 +20,12 @@
                                 @endif
                                 @dateBetween($campaign->opening_date, $campaign->closing_date)
                                     <span class="badge badge-success">Active</span>
-                                @elseif (strtotime($campaign->closing_date) < strtotime(date('Y-m-d')))
-                                    <span class="badge badge-secondary">Ended</span>
-                                @elseif (strtotime(date('Y-m-d')) - strtotime($campaign->opening_date) <= 60 * 24 * 7)
-                                    <span class="badge badge-info">Soon</span>
+                                @else
+                                    @if (strtotime($campaign->closing_date) < strtotime(date('Y-m-d')))
+                                        <span class="badge badge-secondary">Ended</span>
+                                    @elseif (strtotime(date('Y-m-d')) - strtotime($campaign->opening_date) <= 60 * 24 * 7)
+                                        <span class="badge badge-info">Soon</span>
+                                    @endif
                                 @enddateBetween
                             </h5>
                             <p class="card-text">

@@ -44,7 +44,7 @@
                             <label for="birthdate" class="col-md-4 col-form-label text-md-right">Birthdate</label>
 
                             <div class="col-md-6">
-                                <div class="input-group date" data-provide="datepicker">
+                                <div class="input-group date" data-provide="datepicker" data-date-format="yyyy/mm/dd">
                                     <input type="text" class="form-control" name="birthdate">
                                     <div class="input-group-addon">
                                         <span class="glyphicon glyphicon-th"></span>
@@ -98,19 +98,7 @@
                         <div class="form-group row">
                             <label for="skills" class="col-md-4 col-form-label text-md-right">Skills</label>
                             <div class="col-md-6">
-                                <select class="form-control form-control-sm mb-3" id="skill-1" name="skill-1">
-                                    <option selected value="">-</option>
-                                    @foreach ($skills as $skill)
-                                        <option value="{{$skill->name}}">{{$skill->name}}</option>
-                                    @endforeach
-                                </select>
-                                <select class="form-control form-control-sm mb-3" id="skill-2" name="skill-2">
-                                    <option selected value="">-</option>
-                                    @foreach ($skills as $skill)
-                                        <option value="{{$skill->name}}">{{$skill->name}}</option>
-                                    @endforeach
-                                </select>
-                                <select class="form-control form-control-sm mb-3" id="skill-3" name="skill-3">
+                                <select name="skills[]" class="custom-select" multiple size="3">
                                     <option selected value="">-</option>
                                     @foreach ($skills as $skill)
                                         <option value="{{$skill->name}}">{{$skill->name}}</option>

@@ -18,7 +18,7 @@ class Worker extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'birthdate', 'email', 'requester'
+        'name', 'surname', 'birthdate', 'email', 'requester', 'password'
     ];
 
     /**

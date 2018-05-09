@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card card-default">
+            <div class="card">
                 <div class="card-header">Dashboard</div>
 
                 <div class="card-body">
@@ -15,6 +15,11 @@
                     @endif
 
                     You are logged in!
+
+                    <p>
+                        <a href="{{ route('profile', Auth::user()->id) }}">Go to your profile</a>
+                        or <a href="{{ route('explore') }}">start exploring</a>
+                    </p>
                 </div>
             </div>
         </div>

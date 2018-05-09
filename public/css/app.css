@@ -10469,3 +10469,10 @@ div.btn-group {
   float: right;
 }
 
+a.action,
+a.action:visited,
+a.action:hover,
+a.action:active {
+  color: white !important;
+}
+
