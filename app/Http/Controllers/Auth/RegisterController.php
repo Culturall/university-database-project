@@ -28,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -50,6 +50,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:worker',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -63,10 +64,26 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return Worker::create([
+        $worker = Worker::create([
             'name' => $data['name'],
+            'surname' => $data['surname'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'password' => bcrypt($data['password']),
+            'birthdate' => $data['birthdate'],
         ]);
+        $worker->skills()->attach($data['skill-1'], ['value' => 2.5]);
+        $worker->skills()->attach($data['skill-2'], ['value' => 2.5]);
+        $worker->skills()->attach($data['skill-3'], ['value' => 2.5]);
+        return $worker;
+    }
+
+    public function showRegistrationForm()
+    {
+        $skills = \App\Skill::all();
+        $data = [
+            'skills' => $skills
+        ];
+
+        return view('auth.register')->with($data);
     }
 }

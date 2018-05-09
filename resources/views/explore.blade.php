@@ -1,18 +1,11 @@
 @extends('app')
 
-@section('title', 'Welcome')
+@section('title', 'Explore')
 
 @section('content')
-    <h1 class="display-1">Welcome to DB-project</h1>
-    <h1 class="display-4 text-muted">A <i>work for tasks</i> place</h5>
-
-    <div class="btn-group btn-group-lg" role="group" aria-label="...">
-        <button type="button" class="btn btn-primary">Get a task</button>
-        @auth
-            <button type="button" class="btn btn-primary">Create a campaign</button>
-        @endauth
-    </div>
-
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    </form>
     @isset($campaigns)
         <div class="row campaigns">
             @foreach ($campaigns as $campaign)
@@ -29,7 +22,7 @@
                                     <span class="badge badge-success">Active</span>
                                 @elseif (strtotime($campaign->closing_date) < strtotime(date('Y-m-d')))
                                     <span class="badge badge-secondary">Ended</span>
-                                @elseif (strtotime(date('Y-m-d')) - strtotime($campaign->closing_date) <= 60 * 24 * 7)
+                                @elseif (strtotime(date('Y-m-d')) - strtotime($campaign->opening_date) <= 60 * 24 * 7)
                                     <span class="badge badge-info">Soon</span>
                                 @enddateBetween
                             </h5>
@@ -41,7 +34,7 @@
                                 @endif
                             </p>
                             <p class="small">from {{$campaign->opening_date}} to {{$campaign->closing_date}}</p>
-                            <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary">See more</a>
+                            <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
                         </div>
                     </div>
                 </div>
