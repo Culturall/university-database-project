@@ -8,10 +8,10 @@
                 <div class="card-header">Create new task</div>
 
                 <div class="card-body">
-                    <form method="POST" id="create-task-form" action="{{ route('campaign.create.action') }}">
+                    <form method="POST" id="create-task-form" action="{{ route('campaign.create.task.action') }}">
                         @csrf @method('POST')
 
-                        <input type="hidden" name="worker_id" value="{{ Auth::user()->id }}">
+                        <input type="hidden" name="campaign" value="{{ $campaign->id }}">
 
                         <div class="form-group row">
                             <label for="title" class="col-md-4 col-form-label text-md-right">Title</label>

@@ -49,7 +49,7 @@ Route::post('/profile/edit', function (Request $request) {
     $updateValues = $request->only([
         'name',
         'surname',
-        'birthdate'
+        'birthdate',
     ]);
     \App\Worker::find($worker_id)->update($updateValues);
     return redirect()->route('profile', ['worker' => $worker_id]);
@@ -72,7 +72,6 @@ Route::view('campaign/create', 'campaign-create', [
 Route::post('campaign/create', function (Request $request) {
     $data = $request->except(['worker_id', '_token', '_method']);
     $data['creator'] = $request->input("worker_id");
-    print_r($data);
     $campaign = \App\Campaign::create($data);
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.create.action');
@@ -82,6 +81,19 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
         'campaign' => $campaign,
     ]);
 })->name('campaign.edit');
+Route::post('campaign/create/task', function (Request $request) {
+    $data = $request->except(['options', '_token', '_method']);
+    $options = json_decode($request->input('options'));
+    $task = \App\Task::create($data);
+    foreach ($options as $option) {
+        $option = \App\TaskOption::create([
+            'name' => $option,
+            'task' => $task->id
+        ]);
+        $task->options()->attach($option->id);
+    }
+    return redirect()->route('campaign', ['campaign' => $request->input('campaign')]);
+})->name('campaign.create.task.action');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();
