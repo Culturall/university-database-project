@@ -13,7 +13,8 @@
 
 use Illuminate\Http\Request;
 
-Route::view('/', 'welcome', [
+Route::redirect('/', '/welcome', 301);
+Route::view('/welcome', 'welcome', [
     'route' => 0,
     'campaigns' => App\Campaign::limit(8)->get(),
 ]);
@@ -80,4 +81,4 @@ Route::post('campaign/create', function (Request $request) {
 Auth::routes();
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
