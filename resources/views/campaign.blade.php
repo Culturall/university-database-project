@@ -30,8 +30,13 @@
 <div class="alert alert-info" role="alert">
     Already joined!
 </div>
-@endif @endauth @isset($campaign)
-<h4 class="text-muted mt-4">tasks</h4>
+@endif @if (Auth::user()->id == $campaign->creator) 
+    <a href="{{ route('campaign.edit', $campaign->id) }}" class="btn btn-warning mt-4" role="button">Edit</a>
+@endif @endauth
+
+<h4 class="text-muted mt-4">Description</h4>
+<p>{{$campaign->description}}</p>
+
 <div class="row campaigns">
     @forelse ($campaign->tasks as $task)
     <div class="card-container col-sm-6 col-lg-3">
@@ -51,5 +56,4 @@
     </div>
     @endforelse
 </div>
-@endisset
 @endsection

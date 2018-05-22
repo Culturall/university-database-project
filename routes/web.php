@@ -66,16 +66,22 @@ Route::post('join', function (Request $request) {
     return redirect()->route('campaign', ['campaign' => $campaign_id]);
 })->name('join');
 Route::view('campaign/create', 'campaign-create', [
+    'route' => 1,
     'requester' => 8,
 ])->name('campaign.create');
 Route::post('campaign/create', function (Request $request) {
-    $data = $request->input()->except('worker_id');
+    $data = $request->except(['worker_id', '_token', '_method']);
     $data['creator'] = $request->input("worker_id");
-    $campaign = new \App\Campaign();
-    $campaign->update($data);
-    $campaign->save();
+    print_r($data);
+    $campaign = \App\Campaign::create($data);
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.create.action');
+Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
+    return view('campaign-edit', [
+        'route' => 1,
+        'campaign' => $campaign,
+    ]);
+})->name('campaign.edit');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();
