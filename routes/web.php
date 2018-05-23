@@ -72,7 +72,28 @@ Route::view('campaign/create', 'campaign-create', [
 Route::post('campaign/create', function (Request $request) {
     $data = $request->except(['worker_id', '_token', '_method']);
     $data['creator'] = $request->input("worker_id");
-    $campaign = \App\Campaign::create($data);
+    if ($request->input('opening_date') > $request->input('closing_date') ||
+        $request->input('sign_in_period_open') > $request->input('sign_in_period_close') ||
+        $request->input('closing_date') < $request->input('sign_in_period_close')) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('date', 'There\'s an error with the given dates. Please try valid periods!');
+        return redirect()->route('campaign.create')->withErrors($validator);
+    }
+    if (!is_numeric($request->input('required_workers')) || $request->input('required_workers') < 1) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('required_workers', 'Invalid number for required workers (' . $request->input('required_workers') . ')');
+        return redirect()->route('campaign.create')->withErrors($validator);
+    }
+    try {
+        DB::beginTransaction();
+        $campaign = \App\Campaign::create($data);
+        DB::commit();
+    } catch (\Illuminate\Database\QueryException $ex) {
+        DB::rollBack();
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', $ex->getMessage());
+        return redirect()->route('campaign.create')->withErrors($validator);
+    }
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.create.action');
 Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
@@ -84,13 +105,34 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
 Route::post('campaign/create/task', function (Request $request) {
     $data = $request->except(['options', '_token', '_method']);
     $options = json_decode($request->input('options'));
-    $task = \App\Task::create($data);
-    foreach ($options as $option) {
-        $option = \App\TaskOption::create([
-            'name' => $option,
-            'task' => $task->id
-        ]);
-        $task->options()->attach($option->id);
+    if (count($options) < 2) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('options', 'Needs at least 2 options, ' . count($options) . ' given');
+        return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
+    }
+    $count_options = array_count_values($options);
+    foreach ($count_options as $key => $value) {
+        if ($value > 1) {
+            $validator = Validator::make($request->all(), []);
+            $validator->errors()->add('options', 'options should be different (' . $key . ')');
+            return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
+        }
+    }
+    try {
+        DB::beginTransaction();
+        $task = \App\Task::create($data);
+        foreach ($options as $option) {
+            \App\TaskOption::create([
+                'name' => $option,
+                'task' => $task->id,
+            ]);
+        }
+        DB::commit();
+    } catch (\Illuminate\Database\QueryException $ex) {
+        DB::rollBack();
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', $ex->getMessage());
+        return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
     }
     return redirect()->route('campaign', ['campaign' => $request->input('campaign')]);
 })->name('campaign.create.task.action');

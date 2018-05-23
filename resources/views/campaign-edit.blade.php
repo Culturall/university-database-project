@@ -17,7 +17,12 @@
                             <label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
 
                             <div class="col-md-6">
-                                <input id="title" type="text" class="form-control" name="title" value="" required autofocus>
+                                <input id="title" type="text" class="form-control{{ $errors->has('title') ? ' is-invalid' : '' }}" name="title" value=""
+                                    required autofocus> @if($errors->has('title'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('title') }}
+                                </div>
+                                @endif
                             </div>
                         </div>
 
@@ -34,10 +39,15 @@
 
                             <div class="col-md-6">
                                 <div class="input-group mb-2">
-                                    <input type="text" id="task-option-input" class="form-control">
+                                    <input type="text" id="task-option-input" class="form-control{{ $errors->has('options') ? ' is-invalid' : '' }}">
                                     <div class="input-group-append">
                                         <button class="btn btn-outline-primary" type="button" id="task-option-button">Add</button>
                                     </div>
+                                    @if($errors->has('options'))
+                                    <div class="invalid-feedback">
+                                        {{ $errors->first('options') }}
+                                    </div>
+                                    @endif
                                 </div>
 
                                 <input type="hidden" name="options" value="[]">
@@ -58,24 +68,26 @@
             </div>
         </div>
 
-        <div class="col-md-8 campaigns">
-            @forelse ($campaign->tasks as $task)
-            <div class="card-container col-sm-6 col-lg-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $task->title }}</h5>
-                        <p class="card-text">
-                            @if (strlen($task->description) > 300) {{ substr($task->description, 0, 300) }}&hellip; @else {{$task->description}} @endif
-                        </p>
+        <div class="col-md-8">
+            <div class="row campaigns">
+                @forelse ($campaign->tasks as $task)
+                <div class="card-container col-sm-6 col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $task->title }}</h5>
+                            <p class="card-text">
+                                @if (strlen($task->description) > 300) {{ substr($task->description, 0, 300) }}&hellip; @else {{$task->description}} @endif
+                            </p>
+                        </div>
                     </div>
                 </div>
+                @empty
+                <div class="col-centered">
+                    <p class="text-muted text-center">No tasks yet
+                        <p>
+                </div>
+                @endforelse
             </div>
-            @empty
-            <div class="col-centered">
-                <p class="text-muted text-center">No tasks yet
-                    <p>
-            </div>
-            @endforelse
         </div>
     </div>
 </div>

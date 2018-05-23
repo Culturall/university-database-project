@@ -35958,20 +35958,34 @@ $(document).ready(function () {
         }
     });
 
-    // CREATE CAMPAIGN SLIDERS
-    $('#required_workers input[type="range"]').val(0);
-    $('#required_workers small').text(0);
-    $('#required_workers input[type="range"]').on('input', function () {
-        $('#required_workers small').text($(this).val());
+    // CREATE CAMPAIGN CHECK ON DATES
+    $('#create-campaign-form').submit(function (e) {
+        var opening_date = new Date($('input[name="opening_date"]').val());
+        var closing_date = new Date($('input[name="closing_date"]').val());
+        var sign_in_period_open = new Date($('input[name="sign_in_period_open"]').val());
+        var sign_in_period_close = new Date($('input[name="sign_in_period_close"]').val());
+
+        if (opening_date > closing_date || sign_in_period_open > sign_in_period_close || closing_date < sign_in_period_close) {
+            alert('There\'s an error with the given dates. Please try valid periods!');
+            e.preventDefault();
+        }
     });
 
+    // CREATE CAMPAIGN SLIDERS
     $('#threshold_percentage input[type="range"]').val(0);
     $('#threshold_percentage small').text(0 + ' %');
     $('#threshold_percentage input[type="range"]').on('input', function () {
         $('#threshold_percentage small').text($(this).val() + ' %');
     });
 
-    // CREATE TASK OPTIONS
+    //CREATE TASK OPTIONS
+    $('#task-option-input').keypress(function (e) {
+        if (event.keyCode === 13) {
+            $("#task-option-button").click();
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    });
     $('#task-option-button').click(function () {
         var name = $('#task-option-input').val();
         if (!name) return;

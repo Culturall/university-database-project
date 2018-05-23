@@ -57,6 +57,7 @@
         </form>
         @endif @endauth
     </div>
+    @if (!$worker->requester)
     <div class="col-lg-3">
         <div class="card">
             <ul class="list-group list-group-flush">
@@ -68,6 +69,7 @@
             </ul>
         </div>
     </div>
+    @endif
 </div>
 
 <h4 class="text-muted mt-4">campaigns</h4>
