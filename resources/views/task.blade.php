@@ -18,6 +18,32 @@
             </div>
         </div>
     </div>
+    
+    <h4 class="text-muted mt-4">Answers</h4>
+    <div class="row">
+        <div class="col-sm-12">
+            <form method="POST" id="answer-task-form" action="{{ route('answer.task.action') }}">
+                @csrf @method('POST')
+
+                <input type="hidden" name="task" value="{{ $task->id }}">
+
+                @foreach ($task->options as $option)
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="options" id="answer-{{$option->id}}" value="{{$option->name}}" required>
+                        <label class="form-check-label" for="answer-{{$option->id}}">
+                        {{ $option->name }}
+                        </label>
+                    </div>
+                @endforeach
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary float-right">
+                        Confirm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 @else 
     <div class="text-center">Not allowed</div>
 @endif

@@ -152,6 +152,9 @@ Route::get('task/{task}', function (App\Task $task) {
         'task' => $task
     ]);
 })->name('task');
+Route::post('task/answer', function (Request $request) {
+    
+})->name('answer.task.action');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();
