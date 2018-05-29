@@ -16,7 +16,7 @@ class Skill extends Model
 
     public function workers()
     {
-        return $this->belongsToMany('App\Worker', 'has', 'skill', 'worker')->withPivot('value');
+        return $this->belongsToMany('App\Worker', 'has', 'skill', 'worker');
     }
 
     public function isNeeded()

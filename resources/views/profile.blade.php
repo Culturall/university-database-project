@@ -62,7 +62,7 @@
         <div class="card">
             <ul class="list-group list-group-flush">
                 @forelse ($worker->skills as $skill)
-                <li class="list-group-item">{{$skill->name}}: {{$skill->pivot->value}}</li>
+                <li class="list-group-item">{{$skill->name}}</li>
                 @empty
                 <li class="list-group-item">no skills</li>
                 @endforelse

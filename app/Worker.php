@@ -18,7 +18,7 @@ class Worker extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'birthdate', 'email', 'requester', 'password'
+        'name', 'surname', 'birthdate', 'email', 'requester', 'password', 'score'
     ];
 
     /**
@@ -32,7 +32,7 @@ class Worker extends Authenticatable
 
     public function skills()
     {
-        return $this->belongsToMany('App\Skill', 'has', 'worker', 'skill')->withPivot('value');
+        return $this->belongsToMany('App\Skill', 'has', 'worker', 'skill');
     }
     public function campaigns() {
         return $this->hasMany('App\Campaign', 'creator');

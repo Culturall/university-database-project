@@ -10,6 +10,7 @@ $factory->define(App\Worker::class, function (Faker $faker) {
         'password' => Hash::make('password'),
         'birthdate' => $faker->date,
         'email' => $faker->unique()->email,
-        'requester' => $faker->boolean
+        'requester' => $faker->boolean,
+        'score' => 2.5
     ];
 });

@@ -23,11 +23,14 @@ class CreateWorkerTable extends Migration
             $table->date('birthdate')->nullable(false);
             $table->string('email', 255)->nullable(false);
             $table->boolean('requester')->nullable(false)->default(false);
+            $table->decimal('score', 2, 1)->nullable(false)->default(0);
 
             $table->rememberToken();
 
             $table->unique('email');
         });
+
+        DB::statement('ALTER TABLE worker ADD CONSTRAINT chk_value_range CHECK (score >= 0 AND score <= 5);');
     }
 
     /**

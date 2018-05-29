@@ -100,11 +100,13 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
     return view('campaign-edit', [
         'route' => 1,
         'campaign' => $campaign,
+        'skills' => \App\Skill::all()
     ]);
 })->name('campaign.edit');
 Route::post('campaign/create/task', function (Request $request) {
-    $data = $request->except(['options', '_token', '_method']);
+    $data = $request->except(['skills', 'options', '_token', '_method']);
     $options = json_decode($request->input('options'));
+    $skills = $request->input('skills');
     if (count($options) < 2) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('options', 'Needs at least 2 options, ' . count($options) . ' given');
@@ -127,6 +129,9 @@ Route::post('campaign/create/task', function (Request $request) {
                 'task' => $task->id,
             ]);
         }
+        foreach ($skills as $skill) {
+            $task->needs()->attach($skill);
+        }
         DB::commit();
     } catch (\Illuminate\Database\QueryException $ex) {
         DB::rollBack();
@@ -136,6 +141,17 @@ Route::post('campaign/create/task', function (Request $request) {
     }
     return redirect()->route('campaign', ['campaign' => $request->input('campaign')]);
 })->name('campaign.create.task.action');
+
+// TASKS -------------------------------------------------------------------------------------------------
+Route::get('task/{task}', function (App\Task $task) {
+    if (Auth::user()->requester || !Auth::user()->joined()->where('campaign', $task->partOf->id)->count()) {
+        $task = null;
+    }
+    return view('task', [
+        'route' => 1,
+        'task' => $task
+    ]);
+})->name('task');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();

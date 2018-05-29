@@ -35940,10 +35940,9 @@ $(document).ready(function () {
     // SELECT MULTIPLE
     var last_valid_selection = null;
 
-    $('select.custom-select').change(function (event) {
+    $('select.register-select').change(function (event) {
         var _this = this;
 
-        console.log($(this).val());
         $(this).val().forEach(function (element) {
             if (!element) {
                 $(_this).val([""]);

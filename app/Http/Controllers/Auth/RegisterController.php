@@ -70,11 +70,12 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'birthdate' => $data['birthdate'],
+            'score' => 2.5
         ]);
         if (isset($data['skills']) && count($data['skills'])) {
             foreach ($data['skills'] as $skill) {
                 if ($skill)
-                    $worker->skills()->attach($skill, ['value' => 2.5]);
+                    $worker->skills()->attach($skill);
             }
         }
         return $worker;

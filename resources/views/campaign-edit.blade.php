@@ -56,6 +56,24 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">Available answers</label>
+
+                            <div class="col-md-6">
+                                <select name="skills[]"
+                                        class="custom-select"
+                                        multiple
+                                        size="3">
+                                    <option selected
+                                            value="">-</option>
+                                    @foreach ($skills as $skill)
+                                    <option value="{{$skill->name}}">{{$skill->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">

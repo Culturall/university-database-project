@@ -126,7 +126,7 @@
                                    class="col-md-4 col-form-label text-md-right">Skills</label>
                             <div class="col-md-6">
                                 <select name="skills[]"
-                                        class="custom-select"
+                                        class="custom-select register-select"
                                         multiple
                                         size="3">
                                     <option selected
@@ -136,8 +136,7 @@
                                     @endforeach
                                 </select>
                                 <small id="skillsHelp"
-                                       class="form-text text-muted">You can choose up to 3 skills to start working. Pay attention, you can't change them later!
-                                    <br>They'll have 2.5 points initial value</small>
+                                       class="form-text text-muted">You can choose up to 3 skills to start working. Pay attention, you can't change them later!</small>
                             </div>
                         </div>
 

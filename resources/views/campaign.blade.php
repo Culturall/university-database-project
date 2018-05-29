@@ -16,8 +16,7 @@
         </div>
     </div>
 </div>
-
-@auth @if (count($campaign->joiners()->where('worker', Auth::user()->id)))
+@auth @if (!$campaign->joiners()->where('worker', Auth::user()->id)->count())
 <div class="btn-group btn-group-lg" role="group" aria-label="...">
     <form method="POST" action="{{ route('join') }}">
         @csrf @method('POST')
@@ -30,9 +29,8 @@
 <div class="alert alert-info" role="alert">
     Already joined!
 </div>
-@endif @if (Auth::user()->id == $campaign->creator) 
-    <a href="{{ route('campaign.edit', $campaign->id) }}" class="btn btn-warning mt-4" role="button">Edit</a>
-@endif @endauth
+@endif @if (Auth::user()->id == $campaign->creator)
+<a href="{{ route('campaign.edit', $campaign->id) }}" class="btn btn-warning mt-4" role="button">Edit</a> @endif @endauth
 
 <h4 class="text-muted mt-4">Description</h4>
 <p>{{$campaign->description}}</p>
