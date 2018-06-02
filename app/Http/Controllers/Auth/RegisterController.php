@@ -8,8 +8,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class RegisterController extends Controller
-{
+class RegisterController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | Register Controller
@@ -35,8 +34,7 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('guest');
     }
 
@@ -46,8 +44,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
-    {
+    protected function validator(array $data) {
         return Validator::make($data, [
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -62,27 +59,29 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Worker
      */
-    protected function create(array $data)
-    {
+    protected function create(array $data) {
         $worker = Worker::create([
             'name' => $data['name'],
             'surname' => $data['surname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'birthdate' => $data['birthdate'],
-            'score' => 2.5
+            'score' => 2.5,
+            'requester' => isset($data['requester']) ? true : false
         ]);
-        if (isset($data['skills']) && count($data['skills'])) {
-            foreach ($data['skills'] as $skill) {
-                if ($skill)
-                    $worker->skills()->attach($skill);
+        if (!isset($data['requester'])) {
+            if (isset($data['skills']) && count($data['skills'])) {
+                foreach ($data['skills'] as $skill) {
+                    if ($skill) {
+                        $worker->skills()->attach($skill);
+                    }
+                }
             }
         }
         return $worker;
     }
 
-    public function showRegistrationForm()
-    {
+    public function showRegistrationForm() {
         $skills = \App\Skill::all();
         $data = [
             'skills' => $skills,

@@ -123,6 +123,19 @@
 
                         <div class="form-group row">
                             <label for="skills"
+                                   class="col-md-4 col-form-label text-md-right">Account type</label>
+                            <div class="col-md-6">
+                                <div class="form-check mt-2">
+                                    <input id="requester" name="requester" class="form-check-input" type="checkbox" value="1">
+                                    <label class="form-check-label" for="requester">
+                                        Requester
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="skills" class="form-group row">
+                            <label for="skills"
                                    class="col-md-4 col-form-label text-md-right">Skills</label>
                             <div class="col-md-6">
                                 <select name="skills[]"

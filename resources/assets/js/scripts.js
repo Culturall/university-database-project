@@ -1,5 +1,14 @@
 $(document).ready(function () {
 
+    // REGISTER
+    $('#requester').change(function () {
+        if($(this).is(':checked')) {
+            $('#skills').hide();
+        } else {
+            $('#skills').show();
+        }
+    });
+
     // PROFILE
     $('.profile-edit-show').click(function () {
         $('#profile-edit-form').show();
