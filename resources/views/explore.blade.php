@@ -31,5 +31,14 @@
     </div>
     @endforeach
 </div>
+<div id="pagination" class="col-sm-12 mt-4">
+    @if($prev)
+        <a href="{{ route('explore') . '?page=' . $prev }}"><span><</span> prev</a>
+    @endif
+    <span class="ml-2 mr-2">{{$page}}</span>
+    @if($next)
+        <a href="{{ route('explore') . '?page=' . $next }}">next <span>></span></a>
+    @endif
+</div>
 @endisset
 @endsection

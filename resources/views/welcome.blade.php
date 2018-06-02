@@ -7,7 +7,6 @@
     <h1 class="display-4 text-muted">A <i>work for tasks</i> place</h5>
 
     <div class="btn-group btn-group-lg" role="group" aria-label="...">
-       
         @auth
             <form id="get-task-form" method="POST" action="{{ route('join') }}">
                 @csrf

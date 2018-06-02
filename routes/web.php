@@ -20,10 +20,21 @@ Route::view('/welcome', 'welcome', [
 ]);
 
 // EXPLORE ----------------------------------------------------------------------------------------------
-Route::view('/explore', 'explore', [
-    'route' => 1,
-    'campaigns' => App\Campaign::get(),
-])->name('explore');
+Route::get('/explore', function (Request $request) {
+    $batch = 5;
+    $page = $request->input('page') ? (is_numeric($request->input('page')) ? intval($request->input('page')) : 1)  : 1;
+    $pages = intval(App\Campaign::get()->count() / $batch);
+    if ($page > $pages || $page < 1) {
+        $page = 1;
+    }
+    return view('explore', [
+        'route' => 1,
+        'campaigns' => App\Campaign::limit($batch)->offset($page * $batch)->get(),
+        'page' => $page ? : 1,
+        'next' => $page && $page < $pages ? $page + 1 : null,
+        'prev' => $page && $page > 1 ? $page - 1 : null
+    ]);
+})->name('explore');
 Route::get('/explore/{campaign}', function (App\Campaign $campaign) {
     return view('campaign', [
         'route' => 1,
@@ -100,7 +111,7 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
     return view('campaign-edit', [
         'route' => 1,
         'campaign' => $campaign,
-        'skills' => \App\Skill::all()
+        'skills' => \App\Skill::all(),
     ]);
 })->name('campaign.edit');
 Route::post('campaign/create/task', function (Request $request) {
@@ -149,11 +160,11 @@ Route::get('task/{task}', function (App\Task $task) {
     }
     return view('task', [
         'route' => 1,
-        'task' => $task
+        'task' => $task,
     ]);
 })->name('task');
 Route::post('task/answer', function (Request $request) {
-    
+
 })->name('answer.task.action');
 
 // AUTH ----------------------------------------------------------------------------------------------

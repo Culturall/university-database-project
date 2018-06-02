@@ -7,7 +7,7 @@
       <a class="nav-link" href="{{ url('/') }}">Home<span class="sr-only">(current)</span></a>
     </li>
     <li class="nav-item <?=$route == 1 ? 'active':''?>">
-      <a class="nav-link" href="{{ url('/') }}/explore">Explore</a>
+      <a class="nav-link" href="{{ route('explore')}}">Explore</a>
     </li>
     @auth
       <li class="nav-item <?=$route == 2 ? 'active':''?>">
