@@ -96,20 +96,21 @@
 <h4 class="text-muted">tasks</h4>
 
 <div class="row campaigns">
-    @forelse ($worker->joined as $campaign) @foreach ($campaign->tasks as $task)
+    <?php $i = 0; ?>
+    @forelse ($worker->getSelected() as $answer)
+    {{ (int) isset($answer->title) }}
     <div class="card-container col-sm-6 col-lg-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">{{ $task->title }}</h5>
-                <p class="small">{{ $campaign->title }}</p>
-                <p class="card-text">{{ $task->description }}</p>
+                {{-- <h5 class="card-title">{{ $answer->title }}</h5> --}}
+                {{-- <p class="card-text">{{ $answer->description }}</p>
+                <p class="small">{{ $answer->answer }}</p> --}}
             </div>
         </div>
     </div>
-    @endforeach @empty
+    @empty
     <div class="col-centered">
-        <p class="text-muted">Nothing
-            <p>
+        <p class="text-muted">Nothing<p>
     </div>
     @endforelse
 </div>

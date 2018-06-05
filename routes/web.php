@@ -164,7 +164,14 @@ Route::get('task/{task}', function (App\Task $task) {
     ]);
 })->name('task');
 Route::post('task/answer', function (Request $request) {
-
+    if (!$request->filled('task') || !$request->filled('option')) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', 'There was an error handling your request, please retry');
+        return redirect('/')->withErrors($validator);
+    }
+    
+    Auth::user()->selected()->attach($request->input('option'));
+    return redirect('/');
 })->name('answer.task.action');
 
 // AUTH ----------------------------------------------------------------------------------------------
