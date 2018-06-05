@@ -47,7 +47,7 @@ class Worker extends Authenticatable {
         foreach ($taskOptions as $taskOption) {
             $taskOption = \App\TaskOption::find($taskOption->pivot->task_option);
             $task = \App\Task::find($taskOption->task);
-            $result[] = [
+            $result[] = (object) [
                 'id' => $task->id,
                 'title' => $task->title,
                 'description' => $task->description,

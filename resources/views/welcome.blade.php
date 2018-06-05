@@ -8,7 +8,7 @@
 
     <div class="btn-group btn-group-lg" role="group" aria-label="...">
         @auth
-            <form id="get-task-form" method="POST" action="{{ route('join') }}">
+            <form id="get-task-form" method="POST" action="{{ route('task.assign') }}">
                 @csrf
                 @method('POST')
 

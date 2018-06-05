@@ -12,6 +12,7 @@
  */
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 Route::redirect('/', '/welcome', 301);
 Route::view('/welcome', 'welcome', [
@@ -154,22 +155,47 @@ Route::post('campaign/create/task', function (Request $request) {
 })->name('campaign.create.task.action');
 
 // TASKS -------------------------------------------------------------------------------------------------
-Route::get('task/{task}', function (App\Task $task) {
+Route::get('task/{task}', function (App\Task $task, Request $request) {
     if (Auth::user()->requester || !Auth::user()->joined()->where('campaign', $task->partOf->id)->count()) {
         $task = null;
     }
+
+    if (!checkAssigned($request, $task)) {
+        $task = null;
+    }
+
     return view('task', [
         'route' => 1,
         'task' => $task,
     ]);
 })->name('task');
+Route::post('task/assign', function (Request $request) {
+    $task = DB::select(DB::raw('select * from gettask(' . Auth::user()->id . ')'));
+    if (is_array($task) && isset($task[0]) && isset($task[0]->gettask)) {
+        $task = $task[0]->gettask;
+    } else {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', 'There was an error getting a task for you, please retry');
+        return redirect('/')->withErrors($validator);
+    }
+    $request->session()->put('assigned', Auth::user()->id . ':' . $task);
+    return redirect()->route('task', ['task' => $task]);
+})->name('task.assign');
 Route::post('task/answer', function (Request $request) {
+    
     if (!$request->filled('task') || !$request->filled('option')) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'There was an error handling your request, please retry');
         return redirect('/')->withErrors($validator);
     }
     
+    if (!checkAssigned($request, \App\Task::find($request->input('task')))) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', 'You\'re not authorized to answer this task');
+        return redirect('/')->withErrors($validator);
+    }
+
+    $request->session()->forget('assigned');
     Auth::user()->selected()->attach($request->input('option'));
     return redirect('/');
 })->name('answer.task.action');
@@ -177,5 +203,17 @@ Route::post('task/answer', function (Request $request) {
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+
+function checkAssigned(Request $request, App\Task $task) {
+    if ($request->session()->has('assigned')) {
+        $assigned = explode(':', $request->session()->get('assigned'));
+        if ((int) $assigned[0] != Auth::user()->id || $task->id != (int) $assigned[1]) {
+            return false;
+        }
+        return true;
+    } else {
+        return false;
+    }
+}
 
 // Route::get('/home', 'HomeController@index')->name('home');

@@ -81,6 +81,7 @@
             <div class="card-body">
                 <h5 class="card-title">{{ $campaign->title }}</h5>
                 <p class="card-text">{{ $campaign->description }}</p>
+                <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
             </div>
         </div>
     </div>
@@ -98,13 +99,12 @@
 <div class="row campaigns">
     <?php $i = 0; ?>
     @forelse ($worker->getSelected() as $answer)
-    {{ (int) isset($answer->title) }}
     <div class="card-container col-sm-6 col-lg-3">
         <div class="card">
             <div class="card-body">
-                {{-- <h5 class="card-title">{{ $answer->title }}</h5> --}}
-                {{-- <p class="card-text">{{ $answer->description }}</p>
-                <p class="small">{{ $answer->answer }}</p> --}}
+                <h5 class="card-title">{{ $answer->title }}</h5>
+                <p class="card-text">{{ $answer->description }}</p>
+                <p class="small">{{ $answer->answer }}</p>
             </div>
         </div>
     </div>
