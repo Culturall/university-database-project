@@ -10,27 +10,37 @@
         <div class="card">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">from {{$campaign->opening_date}} to {{$campaign->closing_date}}</li>
+                <li class="list-group-item">sign in from {{$campaign->sign_in_period_open}} to {{$campaign->sign_in_period_close}}</li>
                 <li class="list-group-item">required workers: {{$campaign->required_workers}}</li>
                 <li class="list-group-item">threshold percentage: {{$campaign->threshold_percentage}}%</li>
             </ul>
         </div>
     </div>
 </div>
-@auth @if (!$campaign->joiners()->where('worker', Auth::user()->id)->count())
-<div class="btn-group btn-group-lg" role="group" aria-label="...">
-    <form method="POST" action="{{ route('join') }}">
-        @csrf @method('POST')
-        <input type="hidden" name="worker_id" value="{{ Auth::user()->id }}">
-        <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
-        <button type="submit" class="btn btn-primary">Join</button>
-    </form>
-</div>
-@else
-<div class="alert alert-info" role="alert">
-    Already joined!
-</div>
-@endif @if (Auth::user()->id == $campaign->creator)
-<a href="{{ route('campaign.edit', $campaign->id) }}" class="btn btn-warning mt-4" role="button">Edit</a> @endif @endauth
+@auth 
+@if (!Auth::user()->requester)
+    @dateBetween($campaign->sign_in_period_open, $campaign->sign_in_period_close)
+        @if (!$campaign->joiners()->where('worker', Auth::user()->id)->count())
+        <div class="btn-group btn-group-lg" role="group" aria-label="...">
+            <form method="POST" action="{{ route('join') }}">
+                @csrf @method('POST')
+                <input type="hidden" name="worker_id" value="{{ Auth::user()->id }}">
+                <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
+                <button type="submit" class="btn btn-primary">Join</button>
+            </form>
+        </div>
+        @else
+        <div class="alert alert-info mt-4" role="alert">
+            Already joined!
+        </div>
+        @endif 
+    @enddateBetween 
+@endif 
+@if (Auth::user()->id == $campaign->creator)
+    @dateBetween($campaign->sign_in_period_open, $campaign->closing_date)
+        <a href="{{ route('campaign.edit', $campaign->id) }}" class="btn btn-warning mt-4" role="button">Edit</a>
+    @enddateBetween
+@endif @endauth
 
 <h4 class="text-muted mt-4">Description</h4>
 <p>{{$campaign->description}}</p>

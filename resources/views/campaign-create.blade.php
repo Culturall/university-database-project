@@ -11,6 +11,10 @@
                     <form id="create-campaign-form" method="POST" action="{{ route('campaign.create.action') }}">
                         @csrf @method('POST')
 
+                        @if($errors->has('exception'))
+                            <div class="centered-text">{{$errors->first('exception')}}</div>
+                        @endif
+
                         <input type="hidden" name="worker_id" value="{{ Auth::user()->id }}">
 
                         <div class="form-group row">

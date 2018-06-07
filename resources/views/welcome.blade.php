@@ -6,6 +6,12 @@
     <h1 class="display-1">Welcome to DB-project</h1>
     <h1 class="display-4 text-muted">A <i>work for tasks</i> place</h5>
 
+    @if ($errors->has('exception'))
+        <div class="alert alert-danger mt-4" role="alert">
+            {{ $errors->first('exception') }}
+        </div>
+    @endif
+
     <div class="btn-group btn-group-lg" role="group" aria-label="...">
         @auth
             <form id="get-task-form" method="POST" action="{{ route('task.assign') }}">

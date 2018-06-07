@@ -61,11 +61,10 @@
     <div class="col-lg-3">
         <div class="card">
             <ul class="list-group list-group-flush">
-                @forelse ($worker->skills as $skill)
-                <li class="list-group-item">{{$skill->name}}</li>
-                @empty
-                <li class="list-group-item">no skills</li>
-                @endforelse
+                <li class="list-group-item">score: {{$worker->score}}</li>
+                <li class="list-group-item">skills:
+                    {{ implode(', ', array_map(function ($e) { return $e['name']; }, $worker->skills->toArray())) }}
+                </li>
             </ul>
         </div>
     </div>
@@ -75,22 +74,41 @@
 <h4 class="text-muted mt-4">campaigns</h4>
 
 <div class="row campaigns">
-    @forelse ($worker->joined as $campaign)
-    <div class="card-container col-sm-6 col-lg-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ $campaign->title }}</h5>
-                <p class="card-text">{{ $campaign->description }}</p>
-                <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
+    @if (!$worker->requester)
+        @forelse ($worker->joined as $campaign)
+        <div class="card-container col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $campaign->title }}</h5>
+                    <p class="card-text">{{ $campaign->description }}</p>
+                    <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
+                </div>
             </div>
         </div>
-    </div>
-    @empty
-    <div class="col-centered">
-        <p class="text-muted">Nothing
-            <p>
-    </div>
-    @endforelse
+        @empty
+        <div class="col-centered">
+            <p class="text-muted">Nothing
+                <p>
+        </div>
+        @endforelse
+    @else
+        @forelse ($worker->campaigns as $campaign)
+        <div class="card-container col-sm-6 col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $campaign->title }}</h5>
+                    <p class="card-text">{{ $campaign->description }}</p>
+                    <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="col-centered">
+            <p class="text-muted">Nothing
+                <p>
+        </div>
+        @endforelse
+    @endif
 </div>
 
 @if (!$worker->requester)

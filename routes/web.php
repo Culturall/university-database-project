@@ -15,10 +15,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 Route::redirect('/', '/welcome', 301);
-Route::view('/welcome', 'welcome', [
-    'route' => 0,
-    'campaigns' => App\Campaign::limit(8)->get(),
-]);
+Route::get('/welcome', function (Request $request) {
+    return view('welcome', [
+        'route' => 0,
+        'campaigns' => App\Campaign::limit(8)->get(),
+    ]);
+})->name('welcome');
 
 // EXPLORE ----------------------------------------------------------------------------------------------
 Route::get('/explore', function (Request $request) {
@@ -175,8 +177,8 @@ Route::post('task/assign', function (Request $request) {
         $task = $task[0]->gettask;
     } else {
         $validator = Validator::make($request->all(), []);
-        $validator->errors()->add('exception', 'There was an error getting a task for you, please retry');
-        return redirect('/')->withErrors($validator);
+        $validator->errors()->add('exception', 'There are no tasks for you atm, try joining a campaign');
+        return redirect()->route('welcome')->withErrors($validator);
     }
     $request->session()->put('assigned', Auth::user()->id . ':' . $task);
     return redirect()->route('task', ['task' => $task]);
@@ -186,7 +188,7 @@ Route::post('task/answer', function (Request $request) {
     if (!$request->filled('task') || !$request->filled('option')) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'There was an error handling your request, please retry');
-        return redirect('/')->withErrors($validator);
+        return redirect('/welcome')->withErrors($validator);
     }
     
     if (!checkAssigned($request, \App\Task::find($request->input('task')))) {

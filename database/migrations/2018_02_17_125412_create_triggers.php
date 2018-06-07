@@ -19,7 +19,7 @@ class CreateTriggers extends Migration
                 BEGIN
                     -- if only one sign_in_period is set, copy that to the other one
                     IF (NEW.sign_in_period_open IS NULL AND NEW.sign_in_period_close IS NOT NULL) THEN
-                        NEW.sign_in_period_open := NEW.sign_in_period_close;
+                        NEW.sign_in_period_open := NEW.opening_date;
                     ELSIF (NEW.sign_in_period_open IS NOT NULL AND NEW.sign_in_period_close IS NULL) THEN
                         NEW.sign_in_period_close := NEW.sign_in_period_open;
                     END IF;
