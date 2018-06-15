@@ -4,8 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Campaign extends Model
-{
+class Campaign extends Model {
     protected $table = 'campaign';
     public $timestamps = false;
 
@@ -18,21 +17,57 @@ class Campaign extends Model
         'sign_in_period_close',
         'required_workers',
         'threshold_percentage',
-        'creator'
+        'creator',
     ];
 
-    public function createdBy()
-    {
+    public function createdBy() {
         return $this->belongsTo('App\Worker', 'creator');
     }
 
-    public function joiners()
-    {
+    public function joiners() {
         return $this->belongsToMany('App\Worker', 'joined', 'campaign', 'worker');
     }
 
-    public function tasks()
-    {
+    public function tasks() {
         return $this->hasMany('App\Task', 'campaign');
+    }
+
+    public function completedTasks() {
+        return $this->tasks()->where('validity', true);
+    }
+
+    public function activeTasks() {
+        $tasks = $this->tasks()->where('validity', false)->get();
+        $activeTasks = [];
+        foreach ($tasks as $task) {
+            $taskOptions = $task->options;
+            foreach ($taskOptions as $taskOption) {
+                if (count($taskOption->selected)) {
+                    $activeTasks[] = $task;
+                    break;
+                }
+            }
+        }
+
+        return $activeTasks;
+    }
+    public function inactiveTasks() {
+        $tasks = $this->tasks()->where('validity', false)->get();
+        $inactiveTasks = [];
+        foreach ($tasks as $task) {
+            $noSelected = true;
+            $taskOptions = $task->options;
+            foreach ($taskOptions as $taskOption) {
+                if (count($taskOption->selected)) {
+                    $noSelected = false;
+                    break;
+                }
+            }
+            if ($noSelected) {
+                $inactiveTasks[] = $task;
+            }
+        }
+
+        return $inactiveTasks;
     }
 }

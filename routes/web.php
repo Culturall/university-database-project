@@ -117,6 +117,15 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
         'skills' => \App\Skill::all(),
     ]);
 })->name('campaign.edit');
+Route::get('campaign/{campaign}/report', function (App\Campaign $campaign) {
+    if (Auth::user()->requester && Auth::user()->id == $campaign->creator) {
+        return view('campaign-report', [
+            'route' => 1,
+            'campaign' => $campaign
+        ]);
+    }
+    return redirect()->route('campaign', ['campaign' => $campaign->id]);
+})->name('campaign.report');
 Route::post('campaign/create/task', function (Request $request) {
     $data = $request->except(['skills', 'options', '_token', '_method']);
     $options = json_decode($request->input('options'));
