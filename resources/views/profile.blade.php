@@ -6,9 +6,12 @@
         <h1 class="display-1">{{$worker->name . ' ' . $worker->surname}}
         </h1>
         @if ($worker->requester)
-        <span class="badge badge-primary mb-3" style="font-size: initial;">requester</span> @endif @auth @if ($worker->id
-        == Auth::user()->id)
-        <button type="button" class="badge btn btn-default float-right profile-edit-show mb-4" style="font-size: initial;">Edit your profile</button>
+        <span class="badge badge-primary mb-3" style="font-size: initial;">requester</span> @endif 
+        @auth @if ($worker->id == Auth::user()->id)
+            @if (!Auth::user()->requester)
+                <a href="{{ route('profile.report', $worker->id) }}" class="btn btn-info mb-4 mt-4" role="button">Report</a>
+            @endif
+        <button type="button" class="badge btn btn-default float-right profile-edit-show mt-4 mb-4" style="font-size: initial;">Edit your profile</button>
         <form id="profile-edit-form" method="POST" action="{{ url('/') }}/profile/edit" class="mb-4" style="display: none;">
             @csrf @method('POST')
 

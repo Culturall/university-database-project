@@ -31,7 +31,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ $task->title }}</h5>
                         <p class="card-text">
-                            {{ $task->answer() }}
+                            {{ $task->answer()->name }}
                         </p>
                     </div>
                 </div>
@@ -84,5 +84,21 @@
             <p>
     </div>
     @endforelse
+</div>
+
+<h4 class="text-muted mt-4">Top ten</h4>
+<div class="col-xs-12 col-lg-6">
+<ul class="list-group">
+    @forelse ($topten as $worker)
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ $worker->name }}
+        <span class="badge  badge-primary badge-pill">{{ $loop->index + 1}}</span>
+          </li>
+    @empty
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+            No completed tasks yet
+          </li>
+    @endforelse
+</ul>
 </div>
 @endsection

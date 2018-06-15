@@ -57,4 +57,32 @@ class Worker extends Authenticatable {
 
         return $result;
     }
+
+    public function getSelectedByCampaign($campaign_id) {
+        $taskOptions = $this->selected()->using('\App\WorkerAnswer')->get();
+        $result = [];
+        foreach ($taskOptions as $taskOption) {
+            $taskOption = \App\TaskOption::find($taskOption->pivot->task_option);
+            $task = \App\Task::find($taskOption->task);
+            if ($task->campaign == $campaign_id) {
+                $result[] = $task;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getSelectedByTask($task_id) {
+        $taskOptions = $this->selected()->using('\App\WorkerAnswer')->get();
+        $result = null;
+        foreach ($taskOptions as $taskOption) {
+            $taskOption = \App\TaskOption::find($taskOption->pivot->task_option);
+            if ($taskOption->task == $task_id) {
+                $result = $taskOption;
+                break;
+            }
+        }
+
+        return $result;
+    }
 }

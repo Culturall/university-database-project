@@ -25,7 +25,7 @@ Route::get('/welcome', function (Request $request) {
 // EXPLORE ----------------------------------------------------------------------------------------------
 Route::get('/explore', function (Request $request) {
     $batch = 5;
-    $page = $request->input('page') ? (is_numeric($request->input('page')) ? intval($request->input('page')) : 1)  : 1;
+    $page = $request->input('page') ? (is_numeric($request->input('page')) ? intval($request->input('page')) : 1) : 1;
     $pages = intval(App\Campaign::get()->count() / $batch);
     if ($page > $pages || $page < 1) {
         $page = 1;
@@ -33,9 +33,9 @@ Route::get('/explore', function (Request $request) {
     return view('explore', [
         'route' => 1,
         'campaigns' => App\Campaign::limit($batch)->offset($page * $batch)->get(),
-        'page' => $page ? : 1,
+        'page' => $page ?: 1,
         'next' => $page && $page < $pages ? $page + 1 : null,
-        'prev' => $page && $page > 1 ? $page - 1 : null
+        'prev' => $page && $page > 1 ? $page - 1 : null,
     ]);
 })->name('explore');
 Route::get('/explore/{campaign}', function (App\Campaign $campaign) {
@@ -48,7 +48,7 @@ Route::get('/explore/{campaign}', function (App\Campaign $campaign) {
 // PROFILE ----------------------------------------------------------------------------------------------
 Route::get('/profile/{worker}', function (App\Worker $worker) {
     $skills = false;
-    if (Auth::user() && $worker && $worker->id == Auth::user()->id) {
+    if (Auth::user() && $worker->id == Auth::user()->id) {
         $skills = \App\Skill::all();
     }
 
@@ -58,6 +58,39 @@ Route::get('/profile/{worker}', function (App\Worker $worker) {
         'skills' => $skills,
     ]);
 })->name('profile');
+Route::get('/profile/{worker}/report', function (App\Worker $worker) {
+    if (!Auth::user() || Auth::user()->requester || $worker->id != Auth::user()->id) {
+        return redirect()->route('profile', ['worker' => $worker->id]);
+    }
+
+    $results = [];
+    foreach ($worker->joined as $campaign) {
+        $leaderboard = DB::select(DB::raw('select * from get_campaign_leaderboard(' . $campaign->id . ')'));
+
+        if ($leaderboard) {
+            $i = 1;
+            foreach ($leaderboard[0] as $key => $worker_id) {
+                if ($worker->id == $worker_id) {
+                    $position = $i;
+                    break;
+                }
+
+                $i++;
+            }
+        }
+
+        $results[] = [
+            'campaign' => $campaign,
+            'position' => isset($position) ? $position : '-',
+        ];
+    }
+
+    return view('profile-report', [
+        'route' => 2,
+        'worker' => $worker,
+        'results' => $results,
+    ]);
+})->name('profile.report');
 Route::post('/profile/edit', function (Request $request) {
     $worker_id = $request->input("worker_id");
     $updateValues = $request->only([
@@ -118,10 +151,19 @@ Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
     ]);
 })->name('campaign.edit');
 Route::get('campaign/{campaign}/report', function (App\Campaign $campaign) {
-    if (Auth::user()->requester && Auth::user()->id == $campaign->creator) {
+    if (Auth::user() && Auth::user()->requester && Auth::user()->id == $campaign->creator) {
+        $topten = DB::select(DB::raw('select * from get_campaign_top_ten(' . $campaign->id . ')'));
+        $workers = [];
+        if ($topten) {
+            foreach ($topten[0] as $key => $worker) {
+                $workers[] = \App\Worker::find($worker);
+            }
+        }
+
         return view('campaign-report', [
             'route' => 1,
-            'campaign' => $campaign
+            'campaign' => $campaign,
+            'topten' => $workers,
         ]);
     }
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
@@ -193,13 +235,13 @@ Route::post('task/assign', function (Request $request) {
     return redirect()->route('task', ['task' => $task]);
 })->name('task.assign');
 Route::post('task/answer', function (Request $request) {
-    
+
     if (!$request->filled('task') || !$request->filled('option')) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'There was an error handling your request, please retry');
         return redirect('/welcome')->withErrors($validator);
     }
-    
+
     if (!checkAssigned($request, \App\Task::find($request->input('task')))) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'You\'re not authorized to answer this task');

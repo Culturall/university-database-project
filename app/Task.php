@@ -35,7 +35,7 @@ class Task extends Model {
             $actual = count($taskOption->selected);
             if ($actual > $max) {
                 $max = $actual;
-                $answer = $taskOption->name;
+                $answer = $taskOption;
             }
         }
 
