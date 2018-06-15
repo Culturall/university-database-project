@@ -160,5 +160,8 @@ class CreateTriggers extends Migration
 
         DB::statement("DROP TRIGGER campaign_check_creator_is_requester ON campaign");
         DB::statement("DROP FUNCTION campaign_check_creator_is_requester()");
+
+        DB::statement("DROP TRIGGER selected_update_task_validity ON selected");
+        DB::statement("DROP FUNCTION selected_update_task_validity()");
     }
 }

@@ -75,6 +75,69 @@ class CreateFunctions extends Migration {
                        END
                    $function$
         ');
+
+        DB::statement('
+        CREATE OR REPLACE FUNCTION public.get_campaign_leaderboard(campaign_id integer)
+ RETURNS SETOF integer
+ LANGUAGE plpgsql
+AS $function$
+ declare
+ 
+ BEGIN
+    
+    return query (select LEADERBOARD.worker from (select count(*) as c, S.worker 
+        from campaign as C
+        join task as T on C.id = T.campaign
+        join task_option as T_O on T.id = T_O.task
+        join selected as S on T_O.id = S.task_option
+        where T.validity IS TRUE
+        and S.task_option in (
+            select S.task_option
+                from selected as S
+                join task_option as T_O on S.task_option = T_O.id
+                join task as T on T_O.task = T.id
+                join campaign as C on T.campaign = C.id
+                where C.id = campaign_id
+                and T.validity IS TRUE
+                group by T.id, S.task_option
+                having count(*) >= ALL (
+                    select count(*) as c
+                    from selected as S
+                    join task_option as T_O on S.task_option = T_O.id
+                    join task as T2 on T_O.task = T2.id
+                    join campaign as C on T2.campaign = C.id
+                    where C.id = campaign_id
+                    and T2.id = T.id
+                    and T2.validity IS TRUE
+                    group by S.task_option
+                )
+        )
+        and C.id = campaign_id
+        group by S.worker
+        order by c DESC) as LEADERBOARD);
+           
+ END
+$function$
+
+        ');
+
+        DB::statement('
+        CREATE OR REPLACE FUNCTION public.get_campaign_top_ten(campaign_id integer)
+        RETURNS SETOF integer
+        LANGUAGE plpgsql
+       AS $function$
+        declare
+        
+        BEGIN
+           
+           return query (select * from get_campaign_leaderboard(campaign_id) limit 10);
+                  
+        END
+       $function$
+       
+        ');
+
+
     }
 
     /**
@@ -84,6 +147,7 @@ class CreateFunctions extends Migration {
      */
     public function down() {
         DB::statement("DROP FUNCTION public.gettask(worker_id integer)");
-        DB::statement("DROP FUNCTION public.selected_update_task_vailidity()");
+        DB::statement("DROP FUNCTION public.get_campaign_leaderboard(campaign_id integer)");
+        DB::statement("DROP FUNCTION public.get_campaign_top_ten(campaign_id integer)");
     }
 }
