@@ -1,9 +1,12 @@
 @extends('app') 
 @section('title', 'Explore') 
 @section('content')
-<form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-</form>
+<div class="col-lg-12 clearfix">
+    <input id="searchfield" class="form-control mr-2" type="search" placeholder="looking for something" aria-label="looking for something" style="width: 200px; float: left;">
+    <button id="search" class="btn btn-primary" style="float: left;">
+        Search
+    </button>
+</div>
 @isset($campaigns)
 <div class="row campaigns">
     @foreach ($campaigns as $campaign)

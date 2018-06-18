@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-md-4 col-form-label text-md-right">Available answers</label>
+                            <label class="col-md-4 col-form-label text-md-right">Skills needed</label>
 
                             <div class="col-md-6">
                                 <select name="skills[]"

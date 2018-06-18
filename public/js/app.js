@@ -35927,6 +35927,12 @@ module.exports = function spread(callback) {
 
 $(document).ready(function () {
 
+    // EXPLORE SEARCH
+    $('#search').click(function () {
+        // console.log(location.protocol + '//' + location.host + location.pathname + '?search=' + $('#searchfield').val());
+        window.location = location.protocol + '//' + location.host + location.pathname + '?search=' + $('#searchfield').val();
+    });
+
     // REGISTER
     $('#requester').change(function () {
         if ($(this).is(':checked')) {

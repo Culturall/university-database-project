@@ -87,7 +87,7 @@
 </div>
 
 <h4 class="text-muted mt-4">Top ten</h4>
-<div class="col-xs-12 col-lg-6">
+<div class="col-xs-12 mt-4 col-lg-6">
 <ul class="list-group">
     @forelse ($topten as $worker)
         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -97,6 +97,21 @@
     @empty
     <li class="list-group-item d-flex justify-content-between align-items-center">
             No completed tasks yet
+          </li>
+    @endforelse
+</ul>
+</div>
+
+<h4 class="text-muted mt-4">List of joined workers</h4>
+<div class="col-xs-12 mt-4 col-lg-6">
+<ul class="list-group">
+    @forelse ($campaign->joiners as $worker)
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ $worker->name }}
+          </li>
+    @empty
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+            No joined workers yet
           </li>
     @endforelse
 </ul>

@@ -55,91 +55,91 @@ class CreateTriggers extends Migration
         DB::statement(
             '
             CREATE OR REPLACE FUNCTION public.selected_update_task_validity()
-            RETURNS trigger
-            LANGUAGE plpgsql
-           AS $function$
-            declare
-            
-            required_workers int;
-            threshold_percentage int;
-            task_id int;
-            workers real;
-            workers_id int[];
-            worker_id int;
-            task_option_id int;
-            max_answers real;
-            worker_score real;
-            
-            BEGIN
-               
-               -- get task
-               select task into task_id from task_option where task_option.id = NEW.task_option;
-               
-               -- get required workers and threshold percentage of campaign
-               select campaign.required_workers, campaign.threshold_percentage into required_workers, threshold_percentage from campaign where campaign.id = 
-                   (select campaign from task where task.id = task_id)
-               ;
-               
-               -- get numbers of workers with selected option of the task
-               workers := (select count(*) from selected where task_option = NEW.task_option);
-               
-               -- check if workers are at least the required ones
-               if (required_workers > workers) then
-                   return null;
-               end if;
-               
-               -- get the number of the most answered option
-               max_answers = (select max(answers.number) from (
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+ declare
+ 
+ required_workers int;
+ threshold_percentage int;
+ task_id int;
+ workers real;
+ workers_id int[];
+ worker_id int;
+ task_option_id int;
+ max_answers real;
+ worker_score real;
+ 
+ BEGIN
+    
+    -- get task
+    select task into task_id from task_option where task_option.id = NEW.task_option;
+    
+    -- get required workers and threshold percentage of campaign
+    select campaign.required_workers, campaign.threshold_percentage into required_workers, threshold_percentage from campaign where campaign.id = 
+        (select campaign from task where task.id = task_id)
+    ;
+    
+    -- get numbers of workers with selected option of the task
+    workers := (select count(*) from selected as S join task_option as T on T.id = S.task_option where T.task = task_id);
+    
+    -- check if workers are at least the required ones
+    if (required_workers > workers) then
+        return null;
+    end if;
+    
+    -- get the number of the most answered option
+    max_answers = (select max(answers.number) from (
+
+select count(*) as number from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
+
+) as answers limit 1);
+
+    -- check if there are more most answered option (if so return)
+    if (
+        (select count(*) from (
+select max(answers.number) from (
+
+select count(*) as number from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
+
+) as answers
+) as maxes) > 1) then
+    return null;
+   end if;
+   
+   -- get task option id of most answered option
+   task_option_id := (select answers.task_option from
+(
+select count(*) as number, task_option from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
+) as answers limit 1);
+
+    -- check if most answered option pass threshold percentage
+    if (threshold_percentage > ((max_answers * 100) / workers)) then
+        return null;
+    end if;
+    
+    -- update task validity to true
+    UPDATE task SET validity = true
+      WHERE task.id = task_id;
+    
+    -- update score for workers which selected the most answered option
+    workers_id := (select array(select worker from selected where selected.task_option = task_option_id));
+    
+    foreach worker_id in array workers_id
+    loop
+        worker_score := (select score from worker WHERE worker.id = worker_id);
+        if (worker_score < 5) then
+            worker_score := worker_score + 0.1;
+        end if;
+        UPDATE worker SET score = worker_score
+          WHERE worker.id = worker_id;
+    end loop;
+    
+    return null;
            
-           select count(*) as number from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
-           
-           ) as answers limit 1);
-           
-               -- check if there are more most answered option (if so return)
-               if (
-                   (select count(*) from (
-           select max(answers.number) from (
-           
-           select count(*) as number from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
-           
-           ) as answers
-           ) as maxes) > 1) then
-               return null;
-              end if;
-              
-              -- get task option id of most answered option
-              task_option_id := (select answers.task_option from
-           (
-           select count(*) as number, task_option from task_option join selected on task_option.id = selected.task_option where task_option.task = task_id group by selected.task_option order by number DESC
-           ) as answers limit 1);
-           
-               -- check if most answered option pass threshold percentage
-               if (threshold_percentage > ((max_answers * 100) / workers)) then
-                   return null;
-               end if;
-               
-               -- update task validity to true
-               UPDATE task SET validity = true
-                 WHERE task.id = task_id;
-               
-               -- update score for workers which selected the most answered option
-               workers_id := (select array(select worker from selected where selected.task_option = task_option_id));
-               
-               foreach worker_id in array workers_id
-               loop
-                   worker_score := (select score from worker WHERE worker.id = worker_id);
-                   if (worker_score < 5) then
-                       worker_score := worker_score + 0.1;
-                   end if;
-                   UPDATE worker SET score = worker_score
-                     WHERE worker.id = worker_id;
-               end loop;
-               
-               return null;
-                      
-            END
-           $function$
-           
+ END
+$function$
+
             '
         );
         DB::statement('

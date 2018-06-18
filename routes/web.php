@@ -24,15 +24,26 @@ Route::get('/welcome', function (Request $request) {
 
 // EXPLORE ----------------------------------------------------------------------------------------------
 Route::get('/explore', function (Request $request) {
+    $search = $request->input('search');
     $batch = 5;
     $page = $request->input('page') ? (is_numeric($request->input('page')) ? intval($request->input('page')) : 1) : 1;
-    $pages = intval(App\Campaign::get()->count() / $batch);
+
+    $query = App\Campaign::query();
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', '%' . $search . '%')
+                ->orWhere('description', 'like', '%' . $search . '%');
+        });
+    }
+    
+    $pages = intval($query->count() / $batch);
     if ($page > $pages || $page < 1) {
         $page = 1;
     }
+    $query->limit($batch)->offset($page == 1 ? 0 : $page * $batch);
     return view('explore', [
         'route' => 1,
-        'campaigns' => App\Campaign::limit($batch)->offset($page * $batch)->get(),
+        'campaigns' => $query->get(),
         'page' => $page ?: 1,
         'next' => $page && $page < $pages ? $page + 1 : null,
         'prev' => $page && $page > 1 ? $page - 1 : null,

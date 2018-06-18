@@ -32,12 +32,8 @@
         @forelse ($worker->getSelectedByCampaign($result['campaign']->id) as $task)
             <div class="card-container col-sm-6 col-lg-3">
             <div class="card">
-                    <div class="card-body">
-                        {{ $task->id }} <br>
-                        {{ $task->validity }}<br>
-                        {{ $task->answer()->id }}<br>
-                        {{ print_r($worker->getSelectedByTask($task->id)) }}<br>
-                        {{ $worker->getSelectedByTask($task->id) == $task->answer()->id }}
+                    <div class="card-body
+                        {{ $task->validity ? ($worker->getSelectedByTask($task->id)->id == $task->answer()->id ? 'text-success' : 'text-warning') : '' }}">
                         <h5 class="card-title">{{ $task->title }}</h5>
                         <p class="card-text">{{ $task->description }}</p>
                     </div>

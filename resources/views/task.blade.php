@@ -19,6 +19,9 @@
         </div>
     </div>
 
+    <h4 class="text-muted mt-4">Description</h4>
+    <p>{{$task->description}}</p>
+
     <h4 class="text-muted mt-4">Answers</h4>
     <div class="row">
         <div class="col-sm-12">
