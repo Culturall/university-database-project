@@ -146,6 +146,41 @@ $function$
             CREATE TRIGGER selected_update_task_validity AFTER INSERT ON selected
                 FOR EACH ROW EXECUTE PROCEDURE selected_update_task_validity();
         ');
+
+        DB::statement('
+        CREATE OR REPLACE FUNCTION public.check_single_answer_to_task()
+        RETURNS trigger
+        LANGUAGE plpgsql
+       AS $function$
+        declare
+        
+        BEGIN
+           
+           -- ok only if not another option to same task given the same worker 
+           IF NOT EXISTS(
+           
+               select T_O.task from task_option as T_O
+           where T_O.id = NEW.task_option
+           and T_O.task not in (
+               select T_O.task from selected as S join task_option as T_O
+                   on S.task_option = T_O.id
+                   where S.worker = NEW.worker
+           )
+           
+           ) THEN
+               RAISE EXCEPTION \'worker cannot asnwer two times the same task\';
+           END IF;
+                           
+           RETURN NEW;
+                  
+        END
+       $function$
+       
+        ');
+        DB::statement('
+            CREATE TRIGGER check_single_answer_to_task BEFORE INSERT OR UPDATE ON selected
+                FOR EACH ROW EXECUTE PROCEDURE check_single_answer_to_task();
+        ');
     }
 
     /**
