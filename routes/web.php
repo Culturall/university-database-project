@@ -80,8 +80,8 @@ Route::get('/profile/{worker}/report', function (App\Worker $worker) {
 
         if ($leaderboard) {
             $i = 1;
-            foreach ($leaderboard[0] as $key => $worker_id) {
-                if ($worker->id == $worker_id) {
+            foreach ($leaderboard as $result) {
+                if ($worker->id == $result->get_campaign_leaderboard) {
                     $position = $i;
                     break;
                 }
@@ -165,11 +165,9 @@ Route::get('campaign/{campaign}/report', function (App\Campaign $campaign) {
     if (Auth::user() && Auth::user()->requester && Auth::user()->id == $campaign->creator) {
         $topten = DB::select(DB::raw('select * from get_campaign_top_ten(' . $campaign->id . ')'));
         $workers = [];
-        print_r($topten);
-        die();
         if ($topten) {
-            foreach ($topten[0] as $key => $worker) {
-                $workers[] = \App\Worker::find($worker);
+            foreach ($topten as $result) {
+                $workers[] = \App\Worker::find($result->get_campaign_top_ten);
             }
         }
 
