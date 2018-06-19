@@ -35,7 +35,7 @@
                     <div class="card-body
                         {{ $task->validity ? ($worker->getSelectedByTask($task->id)->id == $task->answer()->id ? 'text-success' : 'text-warning') : '' }}">
                         <h5 class="card-title">{{ $task->title }}</h5>
-                        <p class="card-text">{{ $task->description }}</p>
+                        <p class="card-text text-truncate">{{ $task->validity ? $task->answer()->name : $task->description }}</p>
                     </div>
                 </div>
             </div>

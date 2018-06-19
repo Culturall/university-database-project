@@ -83,7 +83,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ $campaign->title }}</h5>
-                    <p class="card-text">{{ $campaign->description }}</p>
+                    <p class="card-text text-truncate">{{ $campaign->description }}</p>
                     <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
                 </div>
             </div>
@@ -100,7 +100,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ $campaign->title }}</h5>
-                    <p class="card-text">{{ $campaign->description }}</p>
+                    <p class="card-text text-truncate">{{ $campaign->description }}</p>
                     <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
                 </div>
             </div>
@@ -124,7 +124,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">{{ $answer->title }}</h5>
-                <p class="card-text">{{ $answer->description }}</p>
+                <p class="card-text text-truncate">{{ $answer->description }}</p>
                 <p class="small">{{ $answer->answer }}</p>
             </div>
         </div>
