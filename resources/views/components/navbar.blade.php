@@ -14,6 +14,13 @@
         <a class="nav-link" href="{{ url('/') }}/profile/{{Auth::user()->id}}">Profile</a>
       </li>
     @endauth
+    @auth
+      @if (Auth::user()->admin)
+        <li class="nav-item <?=$route == 3 ? 'active':''?>">
+          <a class="nav-link" href="{{ route('admin') }}">Admin</a>
+        </li>
+      @endif
+    @endauth
   </ul>
   <ul class="navbar-nav" style="margin-left: auto;">
     @guest

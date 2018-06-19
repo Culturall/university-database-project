@@ -119,7 +119,7 @@ Route::post('/profile/{worker}/edit', function (App\Worker $worker, Request $req
 Route::post('join', function (Request $request) {
     $worker_id = $request->input("worker_id");
     $campaign_id = $request->input("campaign_id");
-    if (!Auth::user() || Auth::user()->id != $worker_id) {
+    if (!Auth::user() || Auth::user()->id != $worker_id || Auth::user()->pending || Auth::user()->requester) {
         return redirect()->route('campaign', ['campaign' => $campaign_id]);
     }
     \App\Worker::find($worker_id)->joined()->attach($campaign_id);
@@ -245,7 +245,7 @@ Route::post('campaign/{campaign}/create/task', function (App\Campaign $campaign,
 // TASKS -------------------------------------------------------------------------------------------------
 Route::get('task/{task}', function (App\Task $task, Request $request) {
 
-    if (Auth::user()->requester || !Auth::user()->joined()->where('campaign', $task->partOf->id)->count()) {
+    if (!Auth::user() || Auth::user()->requester || Auth::user()->pending || !Auth::user()->joined()->where('campaign', $task->partOf->id)->count()) {
         $task = null;
     }
 
@@ -259,7 +259,7 @@ Route::get('task/{task}', function (App\Task $task, Request $request) {
     ]);
 })->name('task');
 Route::post('task/assign', function (Request $request) {
-    if (!Auth::user() || Auth::user()->requester) {
+    if (!Auth::user() || Auth::user()->requester || Auth::user()->pending) {
         return redirect()->route('welcome');
     }
 
@@ -277,7 +277,7 @@ Route::post('task/assign', function (Request $request) {
     return redirect()->route('task', ['task' => $task]);
 })->name('task.assign');
 Route::post('task/answer', function (Request $request) {
-    if (!Auth::user() || Auth::user()->requester) {
+    if (!Auth::user() || Auth::user()->requester || Auth::user()->pending) {
         return redirect()->route('welcome');
     }
 
@@ -323,6 +323,33 @@ Route::get('task/{task}/remove', function (App\Task $task, Request $request) {
 
     return redirect()->route('campaign.edit', ['campaign' => $task->partOf->id]);
 })->name('task.remove');
+
+// ADMIN -------------------------------------------------------------------------------------------------
+Route::get('admin/panel', function (Request $request) {
+
+    if (!Auth::user() || !Auth::user()->admin) {
+        return redirect()->route('welcome');
+    }
+
+    return view('admin-panel', [
+        'route' => 3,
+        'workers' => App\Worker::where('pending', true)->get(),
+        'admins' => App\Worker::where('admin', true)->get()
+    ]);
+})->name('admin');
+Route::get('admin/promote', function (Request $request) {
+    if (!Auth::user() || !Auth::user()->admin) {
+        return redirect()->route('welcome');
+    }
+
+    $worker = $request->input('worker');
+    $worker = \App\Worker::find($worker);
+    $worker->update([
+        'pending' => false,
+        'requester' => true
+    ]);
+    return redirect()->route('admin');
+})->name('admin.promote');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();

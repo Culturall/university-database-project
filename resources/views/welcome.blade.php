@@ -20,7 +20,7 @@
 
                 <input type="hidden" name="worker_id" value="{{Auth::user()->id}}">
 
-                @if (!Auth::user()->requester)
+                @if (!Auth::user()->requester && !Auth::user()->pending)
                     <button class="btn btn-primary action" type="submit">Get a task</button>
                 @else
                     <a class="btn btn-primary action" href="

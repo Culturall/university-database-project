@@ -18,7 +18,7 @@
     </div>
 </div>
 @auth 
-@if (!Auth::user()->requester)
+@if (!Auth::user()->requester && !Auth::user()->pending)
     @dateBetween($campaign->sign_in_period_open, $campaign->sign_in_period_close)
         @if (!$campaign->joiners()->where('worker', Auth::user()->id)->count())
         <div class="btn-group btn-group-lg" role="group" aria-label="...">
