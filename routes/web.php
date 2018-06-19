@@ -36,11 +36,12 @@ Route::get('/explore', function (Request $request) {
         });
     }
 
-    $pages = intval($query->count() / $batch);
+    $pages = intval($query->count() / $batch) + 1;
     if ($page > $pages || $page < 1) {
         $page = 1;
     }
-    $query->limit($batch)->offset($page == 1 ? 0 : $page * $batch);
+    $query->limit($batch)->offset(($page - 1) * $batch);
+
     return view('explore', [
         'route' => 1,
         'campaigns' => $query->get(),
