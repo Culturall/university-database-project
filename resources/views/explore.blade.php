@@ -2,10 +2,7 @@
 @section('title', 'Explore') 
 @section('content')
 <div class="col-lg-12 clearfix">
-    <input id="searchfield" class="form-control mr-2" type="search" placeholder="looking for something" aria-label="looking for something" style="width: 200px; float: left;">
-    <button id="search" class="btn btn-primary" style="float: left;">
-        Search
-    </button>
+    <input value="{{ app('request')->input('search') ? : '' }}" id="searchfield" class="form-control mr-2" type="search" placeholder="search" aria-label="search" style="width: 200px; float: left;">
 </div>
 @isset($campaigns)
 <div class="row campaigns">

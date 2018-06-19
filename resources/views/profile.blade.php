@@ -66,7 +66,7 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">score: {{$worker->score}}</li>
                 <li class="list-group-item">skills:
-                    {{ implode(', ', array_map(function ($e) { return $e['name']; }, $worker->skills->toArray())) }}
+                    {{ implode(', ', array_map(function ($e) { return $e['name']; }, $worker->skills->toArray())) ? : '-' }}
                 </li>
             </ul>
         </div>
