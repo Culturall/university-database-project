@@ -12,10 +12,8 @@
                 <a href="{{ route('profile.report', $worker->id) }}" class="btn btn-info mb-4 mt-4" role="button">Report</a>
             @endif
         <button type="button" class="badge btn btn-default float-right profile-edit-show mt-4 mb-4" style="font-size: initial;">Edit your profile</button>
-        <form id="profile-edit-form" method="POST" action="{{ url('/') }}/profile/edit" class="mb-4" style="display: none;">
+        <form id="profile-edit-form" method="POST" action="{{ route('profile.edit', $worker->id) }}" class="mb-4" style="display: none;">
             @csrf @method('POST')
-
-            <input type="hidden" name="worker_id" value="{{$worker->id}}">
 
             <div class="form-group row">
                 <label for="name" class="col-md-3 col-form-label text-md-right">Name</label>

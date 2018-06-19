@@ -35,7 +35,7 @@ Route::get('/explore', function (Request $request) {
                 ->orWhere('description', 'like', '%' . $search . '%');
         });
     }
-    
+
     $pages = intval($query->count() / $batch);
     if ($page > $pages || $page < 1) {
         $page = 1;
@@ -58,19 +58,17 @@ Route::get('/explore/{campaign}', function (App\Campaign $campaign) {
 
 // PROFILE ----------------------------------------------------------------------------------------------
 Route::get('/profile/{worker}', function (App\Worker $worker) {
-    $skills = false;
-    if (Auth::user() && $worker->id == Auth::user()->id) {
-        $skills = \App\Skill::all();
+    if (!Auth::user()) {
+        return redirect('welcome');
     }
 
     return view('profile', [
         'route' => 2,
         'worker' => $worker,
-        'skills' => $skills,
     ]);
 })->name('profile');
 Route::get('/profile/{worker}/report', function (App\Worker $worker) {
-    if (!Auth::user() || Auth::user()->requester || $worker->id != Auth::user()->id) {
+    if (!Auth::user() || Auth::user()->requester || Auth::user()->pending || $worker->id != Auth::user()->id) {
         return redirect()->route('profile', ['worker' => $worker->id]);
     }
 
@@ -102,34 +100,50 @@ Route::get('/profile/{worker}/report', function (App\Worker $worker) {
         'results' => $results,
     ]);
 })->name('profile.report');
-Route::post('/profile/edit', function (Request $request) {
-    $worker_id = $request->input("worker_id");
+Route::post('/profile/{worker}/edit', function (App\Worker $worker, Request $request) {
+
+    if (!Auth::user() || $worker->id != Auth::user()->id) {
+        return redirect()->route('profile', ['worker' => $worker->id]);
+    }
+
     $updateValues = $request->only([
         'name',
         'surname',
         'birthdate',
     ]);
-    \App\Worker::find($worker_id)->update($updateValues);
-    return redirect()->route('profile', ['worker' => $worker_id]);
-});
-Route::view('/profile', 'profile', [
-    'route' => 2,
-]);
+    \App\Worker::find($worker->id)->update($updateValues);
+    return redirect()->route('profile', ['worker' => $worker->id]);
+})->name('profile.edit');
 
 // CAMPAIGNS ----------------------------------------------------------------------------------------------
 Route::post('join', function (Request $request) {
     $worker_id = $request->input("worker_id");
     $campaign_id = $request->input("campaign_id");
+    if (!Auth::user() || Auth::user()->id != $worker_id) {
+        return redirect()->route('campaign', ['campaign' => $campaign_id]);
+    }
     \App\Worker::find($worker_id)->joined()->attach($campaign_id);
     return redirect()->route('campaign', ['campaign' => $campaign_id]);
 })->name('join');
-Route::view('campaign/create', 'campaign-create', [
-    'route' => 1,
-    'requester' => 8,
-])->name('campaign.create');
+Route::get('campaign/create', function (Request $request) {
+    if (!Auth::user() || !Auth::user()->requester) {
+        return redirect()->route('welcome');
+    }
+
+
+    return view('campaign-create', [
+        'route' => 1,
+        'requester' => 8]
+    );
+})->name('campaign.create');
 Route::post('campaign/create', function (Request $request) {
     $data = $request->except(['worker_id', '_token', '_method']);
     $data['creator'] = $request->input("worker_id");
+
+    if (!Auth::user() || Auth::user()->id != $data['creator'] || !Auth::user()->requester) {
+        return redirect()->route('welcome');
+    }
+
     if ($request->input('opening_date') > $request->input('closing_date') ||
         $request->input('sign_in_period_open') > $request->input('sign_in_period_close') ||
         $request->input('closing_date') < $request->input('sign_in_period_close')) {
@@ -155,6 +169,10 @@ Route::post('campaign/create', function (Request $request) {
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.create.action');
 Route::get('campaign/{campaign}/edit', function (App\Campaign $campaign) {
+    if (!Auth::user() || !Auth::user()->requester || Auth::user()->id != $campaign->creator) {
+        return redirect()->route('campaign', ['campaign' => $campaign_id]);
+    }
+
     return view('campaign-edit', [
         'route' => 1,
         'campaign' => $campaign,
@@ -177,23 +195,29 @@ Route::get('campaign/{campaign}/report', function (App\Campaign $campaign) {
             'topten' => $workers,
         ]);
     }
+
     return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.report');
-Route::post('campaign/create/task', function (Request $request) {
+Route::post('campaign/{campaign}/create/task', function (App\Campaign $campaign, Request $request) {
+    if (!Auth::user() || !Auth::user()->requester || Auth::user()->id != $campaign->creator) {
+        return redirect()->route('campaign', ['campaign' => $campaign->id]);
+    }
+
     $data = $request->except(['skills', 'options', '_token', '_method']);
+    $data['campaign'] = $campaign->id;
     $options = json_decode($request->input('options'));
     $skills = $request->input('skills');
     if (count($options) < 2) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('options', 'Needs at least 2 options, ' . count($options) . ' given');
-        return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
+        return redirect()->route('campaign.edit', ['campaign' => $campaign->id])->withErrors($validator);
     }
     $count_options = array_count_values($options);
     foreach ($count_options as $key => $value) {
         if ($value > 1) {
             $validator = Validator::make($request->all(), []);
             $validator->errors()->add('options', 'options should be different (' . $key . ')');
-            return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
+            return redirect()->route('campaign.edit', ['campaign' => $campaign->id])->withErrors($validator);
         }
     }
     try {
@@ -213,13 +237,14 @@ Route::post('campaign/create/task', function (Request $request) {
         DB::rollBack();
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', $ex->getMessage());
-        return redirect()->route('campaign.edit', ['campaign' => $request->input('campaign')])->withErrors($validator);
+        return redirect()->route('campaign.edit', ['campaign' => $campaign->id])->withErrors($validator);
     }
-    return redirect()->route('campaign', ['campaign' => $request->input('campaign')]);
+    return redirect()->route('campaign', ['campaign' => $campaign->id]);
 })->name('campaign.create.task.action');
 
 // TASKS -------------------------------------------------------------------------------------------------
 Route::get('task/{task}', function (App\Task $task, Request $request) {
+
     if (Auth::user()->requester || !Auth::user()->joined()->where('campaign', $task->partOf->id)->count()) {
         $task = null;
     }
@@ -234,7 +259,12 @@ Route::get('task/{task}', function (App\Task $task, Request $request) {
     ]);
 })->name('task');
 Route::post('task/assign', function (Request $request) {
+    if (!Auth::user() || Auth::user()->requester) {
+        return redirect()->route('welcome');
+    }
+
     $task = DB::select(DB::raw('select * from gettask(' . Auth::user()->id . ')'));
+    
     if (is_array($task) && isset($task[0]) && isset($task[0]->gettask)) {
         $task = $task[0]->gettask;
     } else {
@@ -243,9 +273,13 @@ Route::post('task/assign', function (Request $request) {
         return redirect()->route('welcome')->withErrors($validator);
     }
     $request->session()->put('assigned', Auth::user()->id . ':' . $task);
+    
     return redirect()->route('task', ['task' => $task]);
 })->name('task.assign');
 Route::post('task/answer', function (Request $request) {
+    if (!Auth::user() || Auth::user()->requester) {
+        return redirect()->route('welcome');
+    }
 
     if (!$request->filled('task') || !$request->filled('option')) {
         $validator = Validator::make($request->all(), []);
@@ -263,12 +297,13 @@ Route::post('task/answer', function (Request $request) {
     Auth::user()->selected()->attach($request->input('option'));
     return redirect('/');
 })->name('answer.task.action');
-Route::get('task/{task}', function (App\Task $task, Request $request) {
-    if (!Auth::user()->requester || !Auth::user()->id == $task->partOf->id) {
+Route::get('task/{task}/remove', function (App\Task $task, Request $request) {
+    if (!Auth::user() || !Auth::user()->requester || Auth::user()->id != $task->partOf->creator) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'You\'re not the requester of this task');
         return redirect()->route('welcome')->withErrors($validator);
     }
+
     if ($task->validity) {
         $validator = Validator::make($request->all(), []);
         $validator->errors()->add('exception', 'Task has been flagged as valid, can\'t delete it now');

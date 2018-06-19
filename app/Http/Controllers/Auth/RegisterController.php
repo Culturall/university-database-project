@@ -67,7 +67,7 @@ class RegisterController extends Controller {
             'password' => Hash::make($data['password']),
             'birthdate' => $data['birthdate'],
             'score' => 2.5,
-            'requester' => isset($data['requester']) ? true : false
+            'pending' => isset($data['requester']) ? true : false
         ]);
         if (!isset($data['requester'])) {
             if (isset($data['skills']) && count($data['skills'])) {

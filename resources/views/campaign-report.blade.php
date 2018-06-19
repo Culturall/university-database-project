@@ -21,7 +21,10 @@
 <a href="{{ route('campaign', $campaign->id) }}" class="btn btn-info mt-4" role="button">Back</a>
 
 <h4 class="text-muted mt-4">% completed tasks</h4>
-<p>{{ count($campaign->completedTasks) .  '/' . count($campaign->tasks) . ' = ' . count($campaign->completedTasks) * 100 / count($campaign->tasks) . '%' }}</p>
+<p>{{ count($campaign->tasks) ? 
+        count($campaign->completedTasks) .  '/' . count($campaign->tasks) . ' = ' . count($campaign->completedTasks) * 100 / count($campaign->tasks) . '%'
+        : 'no tasks in campaign yet'
+}}</p>
 
 <h4 class="text-muted mt-4">Completed</h4>
 <div class="row campaigns">
