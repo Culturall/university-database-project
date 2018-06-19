@@ -25,7 +25,7 @@ Route::get('/welcome', function (Request $request) {
 // EXPLORE ----------------------------------------------------------------------------------------------
 Route::get('/explore', function (Request $request) {
     $search = $request->input('search');
-    $batch = 5;
+    $batch = 10;
     $page = $request->input('page') ? (is_numeric($request->input('page')) ? intval($request->input('page')) : 1) : 1;
 
     $query = App\Campaign::query();
@@ -165,6 +165,8 @@ Route::get('campaign/{campaign}/report', function (App\Campaign $campaign) {
     if (Auth::user() && Auth::user()->requester && Auth::user()->id == $campaign->creator) {
         $topten = DB::select(DB::raw('select * from get_campaign_top_ten(' . $campaign->id . ')'));
         $workers = [];
+        print_r($topten);
+        die();
         if ($topten) {
             foreach ($topten[0] as $key => $worker) {
                 $workers[] = \App\Worker::find($worker);
@@ -263,6 +265,31 @@ Route::post('task/answer', function (Request $request) {
     Auth::user()->selected()->attach($request->input('option'));
     return redirect('/');
 })->name('answer.task.action');
+Route::get('task/{task}', function (App\Task $task, Request $request) {
+    if (!Auth::user()->requester || !Auth::user()->id == $task->partOf->id) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', 'You\'re not the requester of this task');
+        return redirect()->route('welcome')->withErrors($validator);
+    }
+    if ($task->validity) {
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', 'Task has been flagged as valid, can\'t delete it now');
+        return redirect()->route('campaign.edit', ['campaign' => $task->partOf->id])->withErrors($validator);
+    }
+
+    try {
+        DB::beginTransaction();
+        $task->delete();
+        DB::commit();
+    } catch (\Illuminate\Database\QueryException $ex) {
+        DB::rollBack();
+        $validator = Validator::make($request->all(), []);
+        $validator->errors()->add('exception', $ex->getMessage());
+        return redirect()->route('campaign.edit', ['campaign' => $task->partOf->id])->withErrors($validator);
+    }
+
+    return redirect()->route('campaign.edit', ['campaign' => $task->partOf->id]);
+})->name('task.remove');
 
 // AUTH ----------------------------------------------------------------------------------------------
 Auth::routes();

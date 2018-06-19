@@ -86,15 +86,26 @@
             </div>
         </div>
 
+        @if ($errors->has('exception'))
+            <div class="col-lg-8">
+            <div class="alert alert-danger mt-4" role="alert">
+                {{ $errors->first('exception') }}
+            </div>
+        </div>
+        @endif
+
         <div class="col-md-8">
             <div class="row campaigns">
                 @forelse ($campaign->tasks as $task)
                 <div class="card-container col-sm-6 col-lg-3">
                     <div class="card">
+                        <div class="card-title mb-0 mt-3 mr-3">
+                            <a href="{{ route('task.remove', ['task' => $task->id]) }}" class="badge badge-danger badge-pill float-right" style="cursor: pointer; color: white">X</a>
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title">{{ $task->title }}</h5>
-                            <p class="card-text">
-                                @if (strlen($task->description) > 300) {{ substr($task->description, 0, 300) }}&hellip; @else {{$task->description}} @endif
+                            <p class="card-text text-truncate">
+                                {{$task->description}}
                             </p>
                         </div>
                     </div>

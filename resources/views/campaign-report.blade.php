@@ -51,8 +51,8 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">{{ $task->title }}</h5>
-                <p class="card-text">
-                    @if (strlen($task->description) > 300) {{ substr($task->description, 0, 300) }}&hellip; @else {{$task->description}} @endif
+                <p class="card-text text-truncate">
+                    {{$task->description}}
                 </p>
             </div>
         </div>
@@ -72,8 +72,8 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">{{ $task->title }}</h5>
-                <p class="card-text">
-                    @if (strlen($task->description) > 300) {{ substr($task->description, 0, 300) }}&hellip; @else {{$task->description}} @endif
+                <p class="card-text text-truncate">
+                    {{$task->description}}
                 </p>
             </div>
         </div>

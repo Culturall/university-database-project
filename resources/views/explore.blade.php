@@ -23,9 +23,8 @@
                         <= 60 * 24 * 7) <span class="badge badge-info">Soon</span>
                             @endif @enddateBetween
                 </h5>
-                <p class="card-text">
-                    @if (strlen($campaign->description) > 300) {{ substr($campaign->description, 0, 300) }}&hellip; @else {{$campaign->description}}
-                    @endif
+                <p class="card-text text-truncate">
+                    {{$campaign->description}}
                 </p>
                 <p class="small">from {{$campaign->opening_date}} to {{$campaign->closing_date}}</p>
                 <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary btn-sm">See more</a>
@@ -34,14 +33,20 @@
     </div>
     @endforeach
 </div>
-<div id="pagination" class="col-sm-12 mt-4">
-    @if($prev)
-        <a href="{{ route('explore') . '?page=' . $prev }}"><span><</span> prev</a>
+    @if (count($campaigns))
+    <div id="pagination" class="col-sm-12 mt-4">
+        @if($prev)
+            <a href="{{ route('explore') . '?page=' . $prev }}"><span><</span> prev</a>
+        @endif
+        <span class="ml-2 mr-2">{{$page}}</span>
+        @if($next)
+            <a href="{{ route('explore') . '?page=' . $next }}">next <span>></span></a>
+        @endif
+    </div>
+    @else
+        <p class="text-center text-muted" style="text-align: center;">
+            no campaigns found
+        </p>
     @endif
-    <span class="ml-2 mr-2">{{$page}}</span>
-    @if($next)
-        <a href="{{ route('explore') . '?page=' . $next }}">next <span>></span></a>
-    @endif
-</div>
 @endisset
 @endsection

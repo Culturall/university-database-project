@@ -51,12 +51,8 @@
                                     <span class="badge badge-info">Soon</span>
                                 @endif
                             </h5>
-                            <p class="card-text">
-                                @if (strlen($campaign->description) > 300)
-                                    {{ substr($campaign->description, 0, 300) }}&hellip;
-                                @else
-                                    {{$campaign->description}}
-                                @endif
+                            <p class="card-text text-truncate">
+                                {{$campaign->description}}
                             </p>
                             <p class="small">from {{$campaign->opening_date}} to {{$campaign->closing_date}}</p>
                             <a href="{{URL::to('/')}}/explore/{{$campaign->id}}" class="btn btn-outline-primary">See more</a>
