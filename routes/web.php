@@ -17,8 +17,7 @@ use Illuminate\Support\Facades\DB;
 Route::redirect('/', '/welcome', 301);
 Route::get('/welcome', function (Request $request) {
     return view('welcome', [
-        'route' => 0,
-        'campaigns' => App\Campaign::limit(8)->get(),
+        'route' => 0
     ]);
 })->name('welcome');
 
