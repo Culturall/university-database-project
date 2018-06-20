@@ -38,7 +38,7 @@ selected int = null;
                 		i := i + 1;
                 	END LOOP;
                 	
-                	FOR campaign_id IN (select campaign from joined where worker=worker_id)
+                	FOR campaign_id IN (select J.campaign from joined as J join campaign as C on J.campaign = C.id where worker=worker_id and C.opening_date <= current_date and C.closing_date >= current_date)
                 	LOOP
                 		FOR task_id IN (select id from task where campaign=campaign_id AND validity=FALSE)
                 		LOOP
