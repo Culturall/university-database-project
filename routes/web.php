@@ -74,6 +74,7 @@ Route::get('/profile/{worker}/report', function (App\Worker $worker) {
 
     $results = [];
     foreach ($worker->joined as $campaign) {
+        $position = null;
         $leaderboard = DB::select(DB::raw('select * from get_campaign_leaderboard(' . $campaign->id . ')'));
 
         if ($leaderboard) {
@@ -88,9 +89,10 @@ Route::get('/profile/{worker}/report', function (App\Worker $worker) {
             }
         }
 
+
         $results[] = [
             'campaign' => $campaign,
-            'position' => isset($position) ? $position : '-',
+            'position' => $position ? $position : '-',
         ];
     }
 
